@@ -36,7 +36,7 @@ frc::PowerDistributionPanel pdp{0};
 frc::Joystick JoyAccel1{0}, Xbox{1}, RaceWheel{2};
 
 double JoyY = -JoyAccel1.GetY();
-double WheelX = RaceWheel.GetX();
+double WheelX = RaceWheel.GetX() * 0.5;
 
 //Functions
 void LeftMotorsSpeed(double speed) {
