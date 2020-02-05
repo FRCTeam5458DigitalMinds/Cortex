@@ -15,6 +15,8 @@
 #include <frc/PowerDistributionPanel.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/Joystick.h>
+#include <frc/ADXRS450_Gyro.h>
+
 
 //Declarations
 TalonSRX srx = {0};
@@ -31,6 +33,9 @@ TalonFX RightMotorThree{0};
 
 //PDP
 frc::PowerDistributionPanel pdp{0};
+
+//Gyro
+frc::ADXRS450_Gyro gyro{frc::SPI::Port::kMXP};
 
 //Joysticks
 frc::Joystick JoyAccel1{0}, Xbox{1}, RaceWheel{2};
