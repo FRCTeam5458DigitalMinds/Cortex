@@ -40,9 +40,9 @@ double WheelX = RaceWheel.GetX();
 
 //Functions
 void LeftMotorsSpeed(double speed) {
-  LeftMotorOne.Set(ControlMode::PercentOutput, speed);
-  LeftMotorTwo.Set(ControlMode::PercentOutput, speed);
-  LeftMotorThree.Set(ControlMode::PercentOutput, speed);
+  LeftMotorOne.Set(ControlMode::PercentOutput, -speed);
+  LeftMotorTwo.Set(ControlMode::PercentOutput, -speed);
+  LeftMotorThree.Set(ControlMode::PercentOutput, -speed);
 }
 void RightMotorsSpeed (double speed) {
   RightMotorOne.Set(ControlMode::PercentOutput, speed);
@@ -122,6 +122,11 @@ void Robot::TeleopPeriodic() {
   else if (JoyY > 0.1|| JoyY < -0.1 ){
     LeftMotorsSpeed(JoyY);                 
     RightMotorsSpeed(JoyY);
+  } 
+  //Code for if nothing is pressed
+  else {
+    LeftMotorsSpeed(0);
+    RightMotorsSpeed(0);
   }
 }
 
