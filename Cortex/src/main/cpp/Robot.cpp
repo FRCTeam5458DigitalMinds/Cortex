@@ -104,8 +104,8 @@ void Robot::TeleopInit() {}
 
 void Robot::TeleopPeriodic() {
   //Joysticks
-  JoyY = -JoyAccel1.GetY() * 0.1;
-  WheelX = RaceWheel.GetX() * 0.1;
+  JoyY = -JoyAccel1.GetY();
+  WheelX = RaceWheel.GetX();
 
   //Drive Code
   //Button 5 on the wheel activates point turning
