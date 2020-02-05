@@ -106,7 +106,11 @@ void Robot::AutonomousPeriodic() {
   }
 }
 
-void Robot::TeleopInit() {}
+void Robot::TeleopInit() {
+  //Reset encoder values
+  RightMotorOne.SetSelectedSensorPosition(0);
+  LeftMotorOne.SetSelectedSensorPosition(0);
+}
 
 void Robot::TeleopPeriodic() {
   //Joysticks
@@ -116,7 +120,6 @@ void Robot::TeleopPeriodic() {
     JoyY = -JoyAccel1.GetY();
   }
   WheelX = RaceWheel.GetX();
-
 
   //Drive Code
   //Button 5 on the wheel activates point turning
@@ -145,7 +148,10 @@ void Robot::TeleopPeriodic() {
   }
 
   //Putting values into Shuffleboard
-  frc::SmartDashboard::PutNumber("Gyro Angle", gyro.GetAngle());
+  //frc::SmartDashboard::PutNumber("Gyro Angle", gyro.GetAngle());
+  //Get encoder values from falcons (built in encoders)
+  frc::SmartDashboard::PutNumber("RightEncoderOne", RightMotorOne.GetSelectedSensorPosition());
+  frc::SmartDashboard::PutNumber("LeftEncoderOne", LeftMotorOne.GetSelectedSensorPosition());
 }
 
 void Robot::TestPeriodic() {}
