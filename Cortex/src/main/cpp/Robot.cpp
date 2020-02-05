@@ -12,6 +12,7 @@
 #include <ctre/Phoenix.h>
 #include <frc/Timer.h>
 #include <frc/TimedRobot.h>
+#include <frc/PowerDistributionPanel.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/Joystick.h>
 
@@ -20,22 +21,25 @@ TalonSRX srx = {0};
 
 //Motors
 //Left Side
-TalonFX LeftMotorOne();
-TalonFX LeftMotorTwo();
-TalonFX LeftMotorThree();
+TalonFX LeftMotorOne{13};
+TalonFX LeftMotorTwo{14};
+TalonFX LeftMotorThree{15};
 //Right Side
-TalonFX RightMotorOne();
-TalonFX RightMotorTwo();
-TalonFX RightMotorThree();
+TalonFX RightMotorOne{2};
+TalonFX RightMotorTwo{1};
+TalonFX RightMotorThree{0};
+
+//PDP
+frc::PowerDistributionPanel pdp{0};
 
 //Joysticks
 frc::Joystick JoyAccel1{0}, Xbox{1}, RaceWheel{2};
 
 double JoyY = -JoyAccel1.GetY();
 double WheelX = RaceWheel.GetX();
-//Functions
 
-void LeftMotorsSpeed(double speed){
+//Functions
+void LeftMotorsSpeed(double speed) {
   LeftMotorOne.Set(ControlMode::PercentOutput, speed);
   LeftMotorTwo.Set(ControlMode::PercentOutput, speed);
   LeftMotorThree.Set(ControlMode::PercentOutput, speed);
@@ -46,13 +50,12 @@ void RightMotorsSpeed (double speed) {
   RightMotorThree.Set(ControlMode::PercentOutput, speed);
 }
 
+
 void Robot::RobotInit() {
   m_chooser.SetDefaultOption(kAutoNameDefault, kAutoNameDefault);
   m_chooser.AddOption(kAutoNameCustom, kAutoNameCustom);
   frc::SmartDashboard::PutData("Auto Modes", &m_chooser);
   srx.Set(ControlMode::PercentOutput, 0);
-
-
 }
 
 /**
@@ -116,7 +119,7 @@ void Robot::TeleopPeriodic() {
     RightMotorsSpeed(JoyY - WheelX);
   }
   //Code for driving straight  
-  else if (JoyY > 0.1|| JoyY < -0.1 ) {
+  else if (JoyY > 0.1|| JoyY < -0.1 ){
     LeftMotorsSpeed(JoyY);                 
     RightMotorsSpeed(JoyY);
   }
