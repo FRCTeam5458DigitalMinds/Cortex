@@ -150,8 +150,8 @@ void Robot::TeleopPeriodic() {
   //Putting values into Shuffleboard
   //frc::SmartDashboard::PutNumber("Gyro Angle", gyro.GetAngle());
   //Get encoder values from falcons (built in encoders)
-  frc::SmartDashboard::PutNumber("RightEncoderOne", RightMotorOne.GetSelectedSensorPosition());
-  frc::SmartDashboard::PutNumber("LeftEncoderOne", LeftMotorOne.GetSelectedSensorPosition());
+  frc::SmartDashboard::PutNumber("RightEncoderOne in Feet", RightMotorOne.GetSelectedSensorPosition()/4000);
+  frc::SmartDashboard::PutNumber("LeftEncoderOne in Feet", LeftMotorOne.GetSelectedSensorPosition()/4000);
 }
 
 void Robot::TestPeriodic() {}
