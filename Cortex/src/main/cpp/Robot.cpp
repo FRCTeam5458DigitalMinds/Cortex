@@ -112,11 +112,11 @@ void Robot::TeleopPeriodic() {
   //Joysticks
   if (inverted){
     JoyY = JoyAccel1.GetY();
-    WheelX = -RaceWheel.GetX();
   } else {
     JoyY = -JoyAccel1.GetY();
-    WheelX = RaceWheel.GetX();
   }
+  WheelX = RaceWheel.GetX();
+
 
   //Drive Code
   //Button 5 on the wheel activates point turning
@@ -143,6 +143,9 @@ void Robot::TeleopPeriodic() {
   if (JoyAccel1.GetRawButtonPressed(1)){
     inverted = !inverted;
   }
+
+  //Putting values into Shuffleboard
+  frc::SmartDashboard::PutNumber("Gyro Angle", gyro.GetAngle());
 }
 
 void Robot::TestPeriodic() {}
