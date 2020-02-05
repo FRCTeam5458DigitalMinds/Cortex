@@ -35,8 +35,9 @@ frc::PowerDistributionPanel pdp{0};
 //Joysticks
 frc::Joystick JoyAccel1{0}, Xbox{1}, RaceWheel{2};
 
-double JoyY = -JoyAccel1.GetY();
-double WheelX = RaceWheel.GetX() * 0.5;
+double JoyY;
+double WheelX;
+bool inverted = false;
 
 //Functions
 void LeftMotorsSpeed(double speed) {
@@ -104,8 +105,13 @@ void Robot::TeleopInit() {}
 
 void Robot::TeleopPeriodic() {
   //Joysticks
-  JoyY = -JoyAccel1.GetY();
-  WheelX = RaceWheel.GetX();
+  if (inverted){
+    JoyY = JoyAccel1.GetY();
+    WheelX = -RaceWheel.GetX();
+  } else {
+    JoyY = -JoyAccel1.GetY();
+    WheelX = RaceWheel.GetX();
+  }
 
   //Drive Code
   //Button 5 on the wheel activates point turning
@@ -127,6 +133,10 @@ void Robot::TeleopPeriodic() {
   else {
     LeftMotorsSpeed(0);
     RightMotorsSpeed(0);
+  }
+  //Inverts values
+  if (JoyAccel1.GetRawButtonPressed(1)){
+    inverted = !inverted;
   }
 }
 
