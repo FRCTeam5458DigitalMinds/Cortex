@@ -97,10 +97,13 @@ void Robot::AutonomousInit() {
     // Custom Auto goes here
   } else {
     // Default Auto goes here
-
+    
+    //Auto Init
     currentAutoStep = 1;
     isDelayTimeStampSet = false;
     delayTimeStamp = 0;
+    LeftMotorOne.SetSelectedSensorPosition(0);
+    RightMotorOne.SetSelectedSensorPosition(0);
   }
 }
 
@@ -118,6 +121,8 @@ void goDistance(double inches, double speed) {
   }
   else {
     currentAutoStep = currentAutoStep + 1;
+    LeftMotorOne.SetSelectedSensorPosition(0);
+    RightMotorOne.SetSelectedSensorPosition(0);
   }
 }
 
