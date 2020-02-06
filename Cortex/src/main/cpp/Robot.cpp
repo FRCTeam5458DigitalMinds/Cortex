@@ -42,7 +42,10 @@ frc::Joystick JoyAccel1{0}, Xbox{1}, RaceWheel{2};
 
 double JoyY;
 double WheelX;
+int currentAutoStep;
 bool inverted = false;
+bool isDelayTimeStampSet;
+double delayTimeStamp;
 
 //Functions
 void LeftMotorsSpeed(double speed) {
@@ -94,7 +97,48 @@ void Robot::AutonomousInit() {
     // Custom Auto goes here
   } else {
     // Default Auto goes here
+
+    currentAutoStep = 1;
+    isDelayTimeStampSet = false;
+    delayTimeStamp = 0;
   }
+}
+
+//Autonomous Functions
+void goDistance(double inches, double speed) {
+  double encoderUnits = inches * 4000/12;
+  //double distanceLeft = encoderUnits - ((LeftMotorOne.GetSelectedSensorPosition() + RightMotorOne.GetSelectedSensorPosition()) / 2)
+  if (LeftMotorOne.GetSelectedSensorPosition() < encoderUnits && RightMotorOne.GetSelectedSensorPosition() < encoderUnits && encoderUnits > 0){
+    LeftMotorsSpeed(speed);
+    RightMotorsSpeed(speed);
+  }
+  else if (LeftMotorOne.GetSelectedSensorPosition() > encoderUnits && RightMotorOne.GetSelectedSensorPosition() > encoderUnits && encoderUnits < 0){
+    LeftMotorsSpeed(-speed);
+    RightMotorsSpeed(-speed);
+  }
+  else {
+    currentAutoStep = currentAutoStep + 1;
+  }
+}
+
+void delay(double seconds) {
+  if (!isDelayTimeStampSet){
+    delayTimeStamp = frc::Timer::GetFPGATimestamp();
+    isDelayTimeStampSet = true;
+  }
+  else if (frc::Timer::GetFPGATimestamp() < delayTimeStamp + seconds) {
+    LeftMotorsSpeed(0);
+    RightMotorsSpeed(0);
+  } 
+  else {
+    currentAutoStep = currentAutoStep + 1;
+    isDelayTimeStampSet = false;
+  }
+}
+
+void stopAll(){
+  LeftMotorsSpeed(0);
+  RightMotorsSpeed(0);
 }
 
 void Robot::AutonomousPeriodic() {
@@ -102,6 +146,24 @@ void Robot::AutonomousPeriodic() {
     // Custom Auto goes here
   } else {
     // Default Auto goes here
+
+    switch (currentAutoStep){
+      case 1:
+      goDistance(24, 0.2);
+      break;
+
+      case 2:
+      delay(3);
+      break;
+
+      case 3:
+      goDistance (24, 0.2);
+      break;
+
+      default:
+      LeftMotorsSpeed(0);
+      RightMotorsSpeed(0);
+    }
   }
 }
 
