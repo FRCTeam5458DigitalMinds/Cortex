@@ -50,12 +50,11 @@ void LeftMotorsSpeed(double speed) {
   LeftMotorTwo.Set(ControlMode::PercentOutput, -speed);
   LeftMotorThree.Set(ControlMode::PercentOutput, -speed);
 }
-void RightMotorsSpeed (double speed) {
+void RightMotorsSpeed(double speed) {
   RightMotorOne.Set(ControlMode::PercentOutput, speed);
   RightMotorTwo.Set(ControlMode::PercentOutput, speed);
   RightMotorThree.Set(ControlMode::PercentOutput, speed);
 }
-
 
 void Robot::RobotInit() {
   m_chooser.SetDefaultOption(kAutoNameDefault, kAutoNameDefault);
