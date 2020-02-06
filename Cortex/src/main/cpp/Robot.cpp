@@ -121,8 +121,8 @@ void goDistance(double inches, double speed) {
   }
   else {
     currentAutoStep = currentAutoStep + 1;
-    LeftMotorOne.SetSelectedSensorPosition(0);
-    RightMotorOne.SetSelectedSensorPosition(0);
+    //LeftMotorOne.SetSelectedSensorPosition(0);
+    //RightMotorOne.SetSelectedSensorPosition(0);
   }
 }
 
@@ -134,6 +134,8 @@ void delay(double seconds) {
   else if (frc::Timer::GetFPGATimestamp() < delayTimeStamp + seconds) {
     LeftMotorsSpeed(0);
     RightMotorsSpeed(0);
+    LeftMotorOne.SetSelectedSensorPosition(0);
+    RightMotorOne.SetSelectedSensorPosition(0);
   } 
   else {
     currentAutoStep = currentAutoStep + 1;
@@ -153,14 +155,14 @@ void Robot::AutonomousPeriodic() {
     // Default Auto goes here
     frc::SmartDashboard::PutNumber("RightEncoderOne", RightMotorOne.GetSelectedSensorPosition());
     frc::SmartDashboard::PutNumber("LeftEncoderOne", LeftMotorOne.GetSelectedSensorPosition());
-    
+
     switch (currentAutoStep){
       case 1:
       goDistance(24, 0.2);
       break;
 
       case 2:
-      delay(3);
+      delay(3);         
       break;
 
       case 3:
