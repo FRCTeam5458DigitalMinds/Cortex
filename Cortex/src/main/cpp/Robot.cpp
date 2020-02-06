@@ -151,7 +151,9 @@ void Robot::AutonomousPeriodic() {
     // Custom Auto goes here
   } else {
     // Default Auto goes here
-
+    frc::SmartDashboard::PutNumber("RightEncoderOne", RightMotorOne.GetSelectedSensorPosition());
+    frc::SmartDashboard::PutNumber("LeftEncoderOne", LeftMotorOne.GetSelectedSensorPosition());
+    
     switch (currentAutoStep){
       case 1:
       goDistance(24, 0.2);
@@ -216,8 +218,8 @@ void Robot::TeleopPeriodic() {
   //Putting values into Shuffleboard
   //frc::SmartDashboard::PutNumber("Gyro Angle", gyro.GetAngle());
   //Get encoder values from falcons (built in encoders)
-  frc::SmartDashboard::PutNumber("RightEncoderOne in Feet", RightMotorOne.GetSelectedSensorPosition()/4000);
-  frc::SmartDashboard::PutNumber("LeftEncoderOne in Feet", LeftMotorOne.GetSelectedSensorPosition()/4000);
+  frc::SmartDashboard::PutNumber("RightEncoderOne", RightMotorOne.GetSelectedSensorPosition());
+  frc::SmartDashboard::PutNumber("LeftEncoderOne", LeftMotorOne.GetSelectedSensorPosition());
 }
 
 void Robot::TestPeriodic() {}
