@@ -121,8 +121,8 @@ void goDistance(double inches, double speed) {
   }
   else {
     currentAutoStep = currentAutoStep + 1;
-    //LeftMotorOne.SetSelectedSensorPosition(0);
-    //RightMotorOne.SetSelectedSensorPosition(0);
+    LeftMotorOne.SetSelectedSensorPosition(0);
+    RightMotorOne.SetSelectedSensorPosition(0);
   }
 }
 
@@ -134,8 +134,8 @@ void delay(double seconds) {
   else if (frc::Timer::GetFPGATimestamp() < delayTimeStamp + seconds) {
     LeftMotorsSpeed(0);
     RightMotorsSpeed(0);
-    LeftMotorOne.SetSelectedSensorPosition(0);
-    RightMotorOne.SetSelectedSensorPosition(0);
+    //LeftMotorOne.SetSelectedSensorPosition(0);
+    //RightMotorOne.SetSelectedSensorPosition(0);
   } 
   else {
     currentAutoStep = currentAutoStep + 1;
