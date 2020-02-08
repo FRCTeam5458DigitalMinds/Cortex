@@ -47,6 +47,9 @@ bool inverted = false;
 bool isDelayTimeStampSet;
 double delayTimeStamp;
 
+//Acceleration Variables
+double accelerationSpeed;
+
 //Functions
 void LeftMotorsSpeed(double speed) {
   LeftMotorOne.Set(ControlMode::PercentOutput, -speed);
@@ -207,6 +210,11 @@ void Robot::TeleopInit() {
   LeftMotorOne.SetSelectedSensorPosition(0);
 }
 
+//Teleop Functions
+/*void accelerate(double targetSpeed, double percentPerSecond){
+  averageMotorSpeed = (-(LeftMotorOne.GetMotorOutputPercent()) + RightMotorOne.GetMotorOutputPercent())/2
+}*/
+
 void Robot::TeleopPeriodic() {
   //Joysticks
   if (inverted){
@@ -247,6 +255,8 @@ void Robot::TeleopPeriodic() {
   //Get encoder values from falcons (built in encoders)
   frc::SmartDashboard::PutNumber("RightEncoderOne", RightMotorOne.GetSelectedSensorPosition());
   frc::SmartDashboard::PutNumber("LeftEncoderOne", LeftMotorOne.GetSelectedSensorPosition());
+  frc::SmartDashboard::PutNumber("RightMotorSpeed", RightMotorOne.GetMotorOutputPercent());
+  frc::SmartDashboard::PutNumber("LeftMotorsSpeed", LeftMotorOne.GetMotorOutputPercent());
 }
 
 void Robot::TestPeriodic() {}
