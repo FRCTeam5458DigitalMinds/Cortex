@@ -131,7 +131,7 @@ void goDistance(double inches, double speed) {
 }
 
 void turn(double degrees, double speed){
-  double encoderUnits = (degrees * 26000)/360;
+  double encoderUnits = -(degrees * 26000)/360;
   double averageEncoderValue = (LeftMotorOne.GetSelectedSensorPosition() + RightMotorOne.GetSelectedSensorPosition())/2;
   if (averageEncoderValue > encoderUnits && encoderUnits > 0) {
     LeftMotorsSpeed(speed);
