@@ -16,6 +16,7 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/Joystick.h>
 #include <frc/ADXRS450_Gyro.h>
+#include <frc/AnalogGyro.h>
 
 
 //Declarations
@@ -35,7 +36,7 @@ TalonFX RightMotorThree{0};
 frc::PowerDistributionPanel pdp{0};
 
 //Gyro
-AnalogGyro gyro{0};
+//frc::AnalogGyro gyro{0};
 //frc::ADXRS450_Gyro gyro{frc::SPI::Port::kMXP};
 
 //Joysticks
@@ -252,7 +253,7 @@ void Robot::TeleopPeriodic() {
   }
 
   //Putting values into Shuffleboard
-  frc::SmartDashboard::PutNumber("Gyro Angle", gyro.GetAngle());
+  //frc::SmartDashboard::PutNumber("Gyro Angle", gyro.GetAngle());
   //Get encoder values from falcons (built in encoders)
   frc::SmartDashboard::PutNumber("RightEncoderOne", RightMotorOne.GetSelectedSensorPosition());
   frc::SmartDashboard::PutNumber("LeftEncoderOne", LeftMotorOne.GetSelectedSensorPosition());
