@@ -110,19 +110,20 @@ void Robot::AutonomousInit() {
 //Autonomous Functions
 void goDistance(double inches, double speed) {
   double encoderUnits = inches * 4000/12;
+  double averageEncoderValue = (LeftMotorOne.GetSelectedSensorPosition() + RightMotorOne.GetSelectedSensorPosition())/2;
   //double distanceLeft = encoderUnits - ((LeftMotorOne.GetSelectedSensorPosition() + RightMotorOne.GetSelectedSensorPosition()) / 2)
-  if (LeftMotorOne.GetSelectedSensorPosition() < encoderUnits && RightMotorOne.GetSelectedSensorPosition() < encoderUnits && encoderUnits > 0){
+  if (averageEncoderValue < encoderUnits && encoderUnits > 0){
     LeftMotorsSpeed(speed);
     RightMotorsSpeed(speed);
   }
-  else if (LeftMotorOne.GetSelectedSensorPosition() > encoderUnits && RightMotorOne.GetSelectedSensorPosition() > encoderUnits && encoderUnits < 0){
+  else if (averageEncoderValue > encoderUnits && encoderUnits < 0){
     LeftMotorsSpeed(-speed);
     RightMotorsSpeed(-speed);
   }
   else {
-    currentAutoStep = currentAutoStep + 1;
     LeftMotorOne.SetSelectedSensorPosition(0);
     RightMotorOne.SetSelectedSensorPosition(0);
+    currentAutoStep = currentAutoStep + 1;
   }
 }
 
