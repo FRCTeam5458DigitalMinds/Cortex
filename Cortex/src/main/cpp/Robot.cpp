@@ -35,7 +35,8 @@ TalonFX RightMotorThree{0};
 frc::PowerDistributionPanel pdp{0};
 
 //Gyro
-frc::ADXRS450_Gyro gyro{frc::SPI::Port::kMXP};
+AnalogGyro gyro{0};
+//frc::ADXRS450_Gyro gyro{frc::SPI::Port::kMXP};
 
 //Joysticks
 frc::Joystick JoyAccel1{0}, Xbox{1}, RaceWheel{2};
@@ -67,8 +68,6 @@ void Robot::RobotInit() {
   m_chooser.AddOption(kAutoNameCustom, kAutoNameCustom);
   frc::SmartDashboard::PutData("Auto Modes", &m_chooser);
   srx.Set(ControlMode::PercentOutput, 0);
-
-  gyro = new ADXRS450_Gyro;
 }
 
 /**
