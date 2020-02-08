@@ -127,6 +127,22 @@ void goDistance(double inches, double speed) {
   }
 }
 
+void turn(double degrees, double speed){
+  double encoderUnits = (degrees * 26000)/360;
+  double averageEncoderValue = (LeftMotorOne.GetSelectedSensorPosition() + RightMotorOne.GetSelectedSensorPosition())/2;
+  if (averageEncoderValue < encoderUnits && encoderUnits > 0) {
+    LeftMotorsSpeed(speed);
+    RightMotorsSpeed(-speed);
+  } else if (averageEncoderValue > encoderUnits && encoderUnits < 0){
+    LeftMotorsSpeed(-speed);
+    RightMotorsSpeed(speed);
+  } else {
+    LeftMotorOne.SetSelectedSensorPosition(0);
+    RightMotorOne.SetSelectedSensorPosition(0);
+    currentAutoStep = currentAutoStep + 1;
+  }
+}
+
 void delay(double seconds) {
   if (!isDelayTimeStampSet){
     delayTimeStamp = frc::Timer::GetFPGATimestamp();
@@ -167,7 +183,15 @@ void Robot::AutonomousPeriodic() {
       break;
 
       case 3:
-      goDistance (24, 0.2);
+      goDistance(24, 0.2);
+      break;
+
+      case 4:
+      delay(3);
+      break;
+
+      case 5:
+      turn(180, 0.2);
       break;
 
       default:
