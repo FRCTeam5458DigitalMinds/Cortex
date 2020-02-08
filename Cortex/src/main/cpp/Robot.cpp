@@ -236,7 +236,6 @@ void accelerate(double percentPerSecond){
       accelerationSpeed = accelStartSpeed - deltaSpeed;
     } else {
       accelerationSpeed = -JoyAccel1.GetY();
-
     }
   }
   changeInY = -JoyAccel1.GetY() - averageMotorSpeed;
@@ -261,13 +260,13 @@ void Robot::TeleopPeriodic() {
   } 
    //Regular Turning
   else if((WheelX < -0.05 || WheelX > 0.05) && (JoyY > 0.05 || JoyY < -0.05)){
-    LeftMotorsSpeed(JoyY + WheelX);
-    RightMotorsSpeed(JoyY - WheelX);
+    LeftMotorsSpeed(accelerationSpeed + WheelX);
+    RightMotorsSpeed(accelerationSpeed - WheelX);
   }
   //Code for driving straight  
   else if (JoyY > 0.05 || JoyY < -0.05){
-    LeftMotorsSpeed(JoyY);                 
-    RightMotorsSpeed(JoyY);
+    LeftMotorsSpeed(accelerationSpeed);                 
+    RightMotorsSpeed(accelerationSpeed);
   } 
   //Code for if nothing is pressed
   else {
