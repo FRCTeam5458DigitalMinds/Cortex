@@ -212,7 +212,7 @@ void Robot::TeleopInit() {
 
 //Teleop Functions
 void accelerate(double targetSpeed, double percentPerSecond){
-  averageMotorSpeed = (-(LeftMotorOne.GetMotorOutputPercent()) + RightMotorOne.GetMotorOutputPercent())/2;
+  double averageMotorSpeed = (-(LeftMotorOne.GetMotorOutputPercent()) + RightMotorOne.GetMotorOutputPercent())/2;
 }
 
 void Robot::TeleopPeriodic() {
