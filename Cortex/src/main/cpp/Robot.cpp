@@ -211,9 +211,9 @@ void Robot::TeleopInit() {
 }
 
 //Teleop Functions
-/*void accelerate(double targetSpeed, double percentPerSecond){
-  averageMotorSpeed = (-(LeftMotorOne.GetMotorOutputPercent()) + RightMotorOne.GetMotorOutputPercent())/2
-}*/
+void accelerate(double targetSpeed, double percentPerSecond){
+  averageMotorSpeed = (-(LeftMotorOne.GetMotorOutputPercent()) + RightMotorOne.GetMotorOutputPercent())/2;
+}
 
 void Robot::TeleopPeriodic() {
   //Joysticks
@@ -251,10 +251,11 @@ void Robot::TeleopPeriodic() {
   }
 
   //Putting values into Shuffleboard
-  //frc::SmartDashboard::PutNumber("Gyro Angle", gyro.GetAngle());
+  frc::SmartDashboard::PutNumber("Gyro Angle", gyro.GetAngle());
   //Get encoder values from falcons (built in encoders)
   frc::SmartDashboard::PutNumber("RightEncoderOne", RightMotorOne.GetSelectedSensorPosition());
   frc::SmartDashboard::PutNumber("LeftEncoderOne", LeftMotorOne.GetSelectedSensorPosition());
+  //Get the current speed of each side
   frc::SmartDashboard::PutNumber("RightMotorSpeed", RightMotorOne.GetMotorOutputPercent());
   frc::SmartDashboard::PutNumber("LeftMotorsSpeed", LeftMotorOne.GetMotorOutputPercent());
 }
