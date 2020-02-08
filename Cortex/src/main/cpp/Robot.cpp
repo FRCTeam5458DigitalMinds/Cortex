@@ -53,6 +53,7 @@ double accelTimeStamp;
 double changeInY;
 double accelStartSpeed;
 double deltaSpeed;
+bool isAccelTimeStampSet;
 
 //Functions
 void LeftMotorsSpeed(double speed) {
@@ -223,7 +224,7 @@ void Robot::TeleopInit() {
 void accelerate(double percentPerSecond){
   double averageMotorSpeed = (-(LeftMotorOne.GetMotorOutputPercent()) + RightMotorOne.GetMotorOutputPercent())/2;
   //JoyY or averageMotorSpeed < targetSpeed
-  if (!isAccelTimeStampSet || ((changeInY > 0 && -JoyAccel1.GetY() - averageMotorSpeed < 0) || (changeInY < 0 && JoyAccel1.GetY() - averageMotorSpeed > 0))) {
+  if (!isAccelTimeStampSet || ((changeInY > 0 && -JoyAccel1.GetY() - averageMotorSpeed < 0) || (changeInY < 0 && -JoyAccel1.GetY() - averageMotorSpeed > 0))) {
     isAccelTimeStampSet = true;
     accelTimeStamp = frc::Timer::GetFPGATimestamp();
     accelStartSpeed = -JoyAccel1.GetY();
@@ -237,7 +238,7 @@ void accelerate(double percentPerSecond){
       accelerationSpeed = -JoyAccel1.GetY();
     }
   }
-  changeInY = -JoyAccel1 - averageMotorSpeed;
+  changeInY = -JoyAccel1.GetY() - averageMotorSpeed;
 }
 
 void Robot::TeleopPeriodic() {
@@ -249,9 +250,6 @@ void Robot::TeleopPeriodic() {
   }
   WheelX = RaceWheel.GetX();
 
-  //Calls the acceleration function
-  accelerate(0.1);
-
   //Drive Code
   //Button 5 on the wheel activates point turning
   if (RaceWheel.GetRawButton(5)) {
@@ -260,13 +258,15 @@ void Robot::TeleopPeriodic() {
   } 
    //Regular Turning
   else if((WheelX < -0.01 || WheelX > 0.01) && (JoyY > 0.06 || JoyY < -0.06)){
-    LeftMotorsSpeed(JoyY + WheelX);
-    RightMotorsSpeed(JoyY - WheelX);
+    accelerate(0.1);
+    //LeftMotorsSpeed(JoyY + WheelX);
+    //RightMotorsSpeed(JoyY - WheelX);
   }
   //Code for driving straight  
   else if (JoyY > 0.1|| JoyY < -0.1 ){
-    LeftMotorsSpeed(JoyY);                 
-    RightMotorsSpeed(JoyY);
+    accelerate(0.1);
+    //LeftMotorsSpeed(JoyY);                 
+    //RightMotorsSpeed(JoyY);
   } 
   //Code for if nothing is pressed
   else {
