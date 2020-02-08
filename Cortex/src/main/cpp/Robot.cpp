@@ -34,7 +34,6 @@ TalonFX RightMotorThree{0};
 frc::PowerDistributionPanel pdp{0};
 
 //Gyro
-//AnalogGyro gyro{0};
 frc::ADXRS450_Gyro gyro{frc::SPI::Port::kCS0};
 
 //Joysticks
@@ -249,6 +248,8 @@ void accelerate(double percentPerSecond){
 }
 
 void Robot::TeleopPeriodic() {
+  accelerate(0.1);
+  
   //Joysticks
   if (inverted){
     JoyY = JoyAccel1.GetY();
@@ -256,8 +257,6 @@ void Robot::TeleopPeriodic() {
     JoyY = -JoyAccel1.GetY();
   }
   WheelX = RaceWheel.GetX();
-
-  accelerate(0.1);
 
   //Drive Code
   //Button 5 on the wheel activates point turning
