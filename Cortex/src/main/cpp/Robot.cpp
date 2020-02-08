@@ -133,12 +133,12 @@ void goDistance(double inches, double speed) {
 void turn(double degrees, double speed){
   double encoderUnits = (degrees * 26000)/360;
   double averageEncoderValue = (LeftMotorOne.GetSelectedSensorPosition() + RightMotorOne.GetSelectedSensorPosition())/2;
-  if (averageEncoderValue < encoderUnits && encoderUnits > 0) {
-    LeftMotorsSpeed(-speed);
-    RightMotorsSpeed(speed);
-  } else if (averageEncoderValue > encoderUnits && encoderUnits < 0){
+  if (averageEncoderValue > encoderUnits && encoderUnits > 0) {
     LeftMotorsSpeed(speed);
     RightMotorsSpeed(-speed);
+  } else if (averageEncoderValue < encoderUnits && encoderUnits < 0){
+    LeftMotorsSpeed(-speed);
+    RightMotorsSpeed(speed);
   } else {
     LeftMotorOne.SetSelectedSensorPosition(0);
     RightMotorOne.SetSelectedSensorPosition(0);
