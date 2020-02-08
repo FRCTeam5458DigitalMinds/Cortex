@@ -234,6 +234,9 @@ void accelerate(double percentPerSecond){
       accelerationSpeed = accelStartSpeed + deltaSpeed;
     } else if (-JoyAccel1.GetY() < averageMotorSpeed && -JoyAccel1.GetY() < -0.05) {
       accelerationSpeed = accelStartSpeed - deltaSpeed;
+    } else if (-JoyAccel1.GetY() > -0.05 && -JoyAccel1.GetY() < 0.05){
+      isAccelTimeStampSet = false;
+      accelerationSpeed = 0;
     } else {
       accelerationSpeed = -JoyAccel1.GetY();
     }
