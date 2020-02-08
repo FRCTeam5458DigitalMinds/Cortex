@@ -35,7 +35,7 @@ frc::PowerDistributionPanel pdp{0};
 
 //Gyro
 //AnalogGyro gyro{0};
-frc::ADXRS450_Gyro gyro{frc::SPI::Port::kMXP};
+frc::ADXRS450_Gyro gyro{frc::SPI::Port::kCS0};
 
 //Joysticks
 frc::Joystick JoyAccel1{0}, Xbox{1}, RaceWheel{2};
@@ -267,8 +267,8 @@ void Robot::TeleopPeriodic() {
   } 
    //Regular Turning
   else if((WheelX < -0.05 || WheelX > 0.05) && (JoyY > 0.05 || JoyY < -0.05)){
-    LeftMotorsSpeed(accelerationSpeed + acceleration * WheelX);
-    RightMotorsSpeed(accelerationSpeed - acceleration * WheelX);
+    LeftMotorsSpeed(accelerationSpeed + accelerationSpeed * WheelX);
+    RightMotorsSpeed(accelerationSpeed - accelerationSpeed * WheelX);
   }
   //Code for driving straight  
   else if (JoyY > 0.05 || JoyY < -0.05){
