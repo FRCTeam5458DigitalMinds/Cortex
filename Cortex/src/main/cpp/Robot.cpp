@@ -230,13 +230,13 @@ void accelerate(double percentPerSecond){
     accelStartSpeed = -JoyAccel1.GetY();
   } else {
     deltaSpeed = (frc::Timer::GetFPGATimestamp() - accelTimeStamp) * percentPerSecond;
-    if (-JoyAccel1.GetY() > averageMotorSpeed && -JoyAccel.GetY() > 0.1) {
+    if (-JoyAccel1.GetY() > averageMotorSpeed && -JoyAccel.GetY() > 0.05) {
       accelerationSpeed = accelStartSpeed + deltaSpeed;
-    } else if (-JoyAccel1.GetY() < averageMotorSpeed && -JoyAccel.GetY() < -0.1) {
+    } else if (-JoyAccel1.GetY() < averageMotorSpeed && -JoyAccel.GetY() < -0.05) {
       accelerationSpeed = accelStartSpeed - deltaSpeed;
     } else {
       accelerationSpeed = -JoyAccel1.GetY();
-      
+
     }
   }
   changeInY = -JoyAccel1.GetY() - averageMotorSpeed;
@@ -260,14 +260,14 @@ void Robot::TeleopPeriodic() {
     RightMotorsSpeed(-WheelX);
   } 
    //Regular Turning
-  else if((WheelX < -0.01 || WheelX > 0.01) && (JoyY > 0.06 || JoyY < -0.06)){
-    //LeftMotorsSpeed(JoyY + WheelX);
-    //RightMotorsSpeed(JoyY - WheelX);
+  else if((WheelX < -0.05 || WheelX > 0.05) && (JoyY > 0.05 || JoyY < -0.05)){
+    LeftMotorsSpeed(JoyY + WheelX);
+    RightMotorsSpeed(JoyY - WheelX);
   }
   //Code for driving straight  
-  else if (JoyY > 0.1 || JoyY < -0.1 ){
-    //LeftMotorsSpeed(JoyY);                 
-    //RightMotorsSpeed(JoyY);
+  else if (JoyY > 0.05 || JoyY < -0.05){
+    LeftMotorsSpeed(JoyY);                 
+    RightMotorsSpeed(JoyY);
   } 
   //Code for if nothing is pressed
   else {
