@@ -230,9 +230,9 @@ void accelerate(double percentPerSecond){
     accelStartSpeed = -JoyAccel1.GetY();
   } else {
     deltaSpeed = (frc::Timer::GetFPGATimestamp() - accelTimeStamp) * percentPerSecond;
-    if (-JoyAccel1.GetY() > averageMotorSpeed && -JoyAccel.GetY() > 0.05) {
+    if (-JoyAccel1.GetY() > averageMotorSpeed && -JoyAccel1.GetY() > 0.05) {
       accelerationSpeed = accelStartSpeed + deltaSpeed;
-    } else if (-JoyAccel1.GetY() < averageMotorSpeed && -JoyAccel.GetY() < -0.05) {
+    } else if (-JoyAccel1.GetY() < averageMotorSpeed && -JoyAccel1.GetY() < -0.05) {
       accelerationSpeed = accelStartSpeed - deltaSpeed;
     } else {
       accelerationSpeed = -JoyAccel1.GetY();
