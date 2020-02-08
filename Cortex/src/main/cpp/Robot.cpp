@@ -237,6 +237,10 @@ void accelerate(double percentPerSecond){
     } else if (-JoyAccel1.GetY() > -0.05 && -JoyAccel1.GetY() < 0.05){
       isAccelTimeStampSet = false;
       accelerationSpeed = 0;
+      accelTimeStamp = 0;
+      changeInY = 0;
+      accelStartSpeed = 0;
+      deltaSpeed = 0;
     } else {
       accelerationSpeed = -JoyAccel1.GetY();
     }
