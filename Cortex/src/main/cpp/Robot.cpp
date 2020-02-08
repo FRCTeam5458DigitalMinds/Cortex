@@ -67,6 +67,9 @@ void Robot::RobotInit() {
   m_chooser.AddOption(kAutoNameCustom, kAutoNameCustom);
   frc::SmartDashboard::PutData("Auto Modes", &m_chooser);
   srx.Set(ControlMode::PercentOutput, 0);
+
+  //Places a compass indicator for the gyro heading on the dashboard
+  frc::Shuffleboard.GetTab("Example tab").Add(gyro);
 }
 
 /**
