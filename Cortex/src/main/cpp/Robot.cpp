@@ -16,8 +16,6 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/Joystick.h>
 #include <frc/ADXRS450_Gyro.h>
-#include <frc/AnalogGyro.h>
-
 
 //Declarations
 TalonSRX srx = {0};
@@ -36,8 +34,8 @@ TalonFX RightMotorThree{0};
 frc::PowerDistributionPanel pdp{0};
 
 //Gyro
-//frc::AnalogGyro gyro{0};
-//frc::ADXRS450_Gyro gyro{frc::SPI::Port::kMXP};
+//AnalogGyro gyro{0};
+frc::ADXRS450_Gyro gyro{frc::SPI::Port::kMXP};
 
 //Joysticks
 frc::Joystick JoyAccel1{0}, Xbox{1}, RaceWheel{2};
@@ -51,6 +49,10 @@ double delayTimeStamp;
 
 //Acceleration Variables
 double accelerationSpeed;
+double accelTimeStamp;
+double changeInY;
+double accelStartSpeed;
+double deltaSpeed;
 
 //Functions
 void LeftMotorsSpeed(double speed) {
@@ -210,11 +212,32 @@ void Robot::TeleopInit() {
   //Reset encoder values
   RightMotorOne.SetSelectedSensorPosition(0);
   LeftMotorOne.SetSelectedSensorPosition(0);
+  accelerationSpeed = 0;
+  accelTimeStamp = 0;
+  changeInY = 0;
+  accelStartSpeed = 0;
+  deltaSpeed = 0;
 }
 
 //Teleop Functions
-void accelerate(double targetSpeed, double percentPerSecond){
+void accelerate(double percentPerSecond){
   double averageMotorSpeed = (-(LeftMotorOne.GetMotorOutputPercent()) + RightMotorOne.GetMotorOutputPercent())/2;
+  //JoyY or averageMotorSpeed < targetSpeed
+  if (!isAccelTimeStampSet || ((changeInY > 0 && -JoyAccel1.GetY() - averageMotorSpeed < 0) || (changeInY < 0 && JoyAccel1.GetY() - averageMotorSpeed > 0))) {
+    isAccelTimeStampSet = true;
+    accelTimeStamp = frc::Timer::GetFPGATimestamp();
+    accelStartSpeed = -JoyAccel1.GetY();
+  } else {
+    deltaSpeed = (frc::Timer::GetFPGATimestamp() - accelTimeStamp) * percentPerSecond;
+    if (-JoyAccel1.GetY() > averageMotorSpeed) {
+      accelerationSpeed = accelStartSpeed + deltaSpeed;
+    } else if (-JoyAccel1.GetY() < averageMotorSpeed) {
+      accelerationSpeed = accelStartSpeed - deltaSpeed;
+    } else {
+      accelerationSpeed = -JoyAccel1.GetY();
+    }
+  }
+  changeInY = -JoyAccel1 - averageMotorSpeed;
 }
 
 void Robot::TeleopPeriodic() {
@@ -225,6 +248,9 @@ void Robot::TeleopPeriodic() {
     JoyY = -JoyAccel1.GetY();
   }
   WheelX = RaceWheel.GetX();
+
+  //Calls the acceleration function
+  accelerate(0.1);
 
   //Drive Code
   //Button 5 on the wheel activates point turning
@@ -253,13 +279,14 @@ void Robot::TeleopPeriodic() {
   }
 
   //Putting values into Shuffleboard
-  //frc::SmartDashboard::PutNumber("Gyro Angle", gyro.GetAngle());
+  frc::SmartDashboard::PutNumber("Gyro Angle", gyro.GetAngle());
   //Get encoder values from falcons (built in encoders)
   frc::SmartDashboard::PutNumber("RightEncoderOne", RightMotorOne.GetSelectedSensorPosition());
   frc::SmartDashboard::PutNumber("LeftEncoderOne", LeftMotorOne.GetSelectedSensorPosition());
   //Get the current speed of each side
   frc::SmartDashboard::PutNumber("RightMotorSpeed", RightMotorOne.GetMotorOutputPercent());
   frc::SmartDashboard::PutNumber("LeftMotorsSpeed", LeftMotorOne.GetMotorOutputPercent());
+  frc::SmartDashboard::PutNumber("AccelerationSpeed", accelerationSpeed);
 }
 
 void Robot::TestPeriodic() {}
