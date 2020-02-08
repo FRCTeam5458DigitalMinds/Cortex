@@ -34,7 +34,7 @@ TalonFX RightMotorThree{0};
 frc::PowerDistributionPanel pdp{0};
 
 //Gyro
-frc::ADXRS450_Gyro gyro{frc::SPI::Port::kCS0};
+frc::ADXRS450_Gyro gyro{frc::SPI::Port::kOnboardCS0};
 
 //Joysticks
 frc::Joystick JoyAccel1{0}, Xbox{1}, RaceWheel{2};
@@ -65,6 +65,8 @@ void RightMotorsSpeed(double speed) {
   RightMotorTwo.Set(ControlMode::PercentOutput, speed);
   RightMotorThree.Set(ControlMode::PercentOutput, speed);
 }
+
+//Color Sensor Code
 
 void Robot::RobotInit() {
   m_chooser.SetDefaultOption(kAutoNameDefault, kAutoNameDefault);
