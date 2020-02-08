@@ -250,6 +250,8 @@ void Robot::TeleopPeriodic() {
   }
   WheelX = RaceWheel.GetX();
 
+  accelerate(0.1);
+
   //Drive Code
   //Button 5 on the wheel activates point turning
   if (RaceWheel.GetRawButton(5)) {
@@ -258,13 +260,11 @@ void Robot::TeleopPeriodic() {
   } 
    //Regular Turning
   else if((WheelX < -0.01 || WheelX > 0.01) && (JoyY > 0.06 || JoyY < -0.06)){
-    accelerate(0.1);
     //LeftMotorsSpeed(JoyY + WheelX);
     //RightMotorsSpeed(JoyY - WheelX);
   }
   //Code for driving straight  
   else if (JoyY > 0.1|| JoyY < -0.1 ){
-    accelerate(0.1);
     //LeftMotorsSpeed(JoyY);                 
     //RightMotorsSpeed(JoyY);
   } 
