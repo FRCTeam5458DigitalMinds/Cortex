@@ -16,6 +16,10 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/Joystick.h>
 #include <frc/ADXRS450_Gyro.h>
+//Color Sensor
+#include <frc/util/color.h>
+#include <rev/ColorSensorV3.h>
+#include <rev/ColorMatch.h>
 
 //Declarations
 TalonSRX srx = {0};
@@ -66,13 +70,27 @@ void RightMotorsSpeed(double speed) {
   RightMotorThree.Set(ControlMode::PercentOutput, speed);
 }
 
-//Color Sensor Code
+//Color Sensor
+static constexpr auto i2cPort = frc::I2C::Port::kOnboard;
+rev::ColorSensorV3 m_colorSensor{i2cPort};
+rev::ColorMatch m_colorMatcher;
+//Colors (RGB values [0-1])
+static constexpr frc::Color kBlueTarget = frc::Color(0.143, 0.427, 0.429);
+static constexpr frc::Color kGreenTarget = frc::Color(0.197, 0.561, 0.240);
+static constexpr frc::Color kRedTarget = frc::Color(0.561, 0.232, 0.114);
+static constexpr frc::Color kYellowTarget = frc::Color(0.361, 0.524, 0.113);
 
 void Robot::RobotInit() {
   m_chooser.SetDefaultOption(kAutoNameDefault, kAutoNameDefault);
   m_chooser.AddOption(kAutoNameCustom, kAutoNameCustom);
   frc::SmartDashboard::PutData("Auto Modes", &m_chooser);
   srx.Set(ControlMode::PercentOutput, 0);
+
+  //Color Sensor
+  m_colorMatcher.AddColorMatch(kBlueTarget);
+  m_colorMatcher.AddColorMatch(kGreenTarget);
+  m_colorMatcher.AddColorMatch(kRedTarget);
+  m_colorMatcher.AddColorMatch(kYellowTarget);
 }
 
 /**
@@ -250,6 +268,34 @@ void accelerate(double percentPerSecond){
 }
 
 void Robot::TeleopPeriodic() {
+  //Color Sensor Code
+  frc::Color detectedColor = m_colorSensor.GetColor();
+  std::string colorString;
+  double confidence = 0.0;
+  frc::Color matchedColor = m_colorMatcher.MatchClosestColor(detectedColor, confidence);
+
+  if (matchedColor == kBlueTarget) {
+    colorString = "Blue";
+  }
+  else if(matchedColor == kRedTarget) {
+    colorString = "Red";
+  }
+  else if(matchedColor == kGreenTarget) {
+    colorString = "Green";
+  }
+  else if(matchedColor == kYellowTarget) {
+    colorString = "Yellow";
+  }
+  else {
+    colorString = "Unknown";
+  }
+  //Put color values in shuffleboard
+  frc::SmartDashboard::PutNumber("Red", detectedColor.red);
+  frc::SmartDashboard::PutNumber("Green", detectedColor.green);
+  frc::SmartDashboard::PutNumber("Blue", detectedColor.blue);
+  frc::SmartDashboard::PutNumber("Confidence", confidence);
+  frc::SmartDashboard::PutString("Detected Color", colorString);
+  
   accelerate(0.1);
   
   //Joysticks
