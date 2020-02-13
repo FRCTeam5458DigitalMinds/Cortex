@@ -15,7 +15,8 @@
 #include <frc/PowerDistributionPanel.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/Joystick.h>
-#include <frc/ADXRS450_Gyro.h>
+//#include <frc/ADXRS450_Gyro.h>
+#include <frc/AnalogGyro.h> 
 //Color Sensor
 #include <frc/util/color.h>
 #include <rev/ColorSensorV3.h>
@@ -38,7 +39,8 @@ TalonFX RightMotorThree{0};
 frc::PowerDistributionPanel pdp{0};
 
 //Gyro
-frc::ADXRS450_Gyro gyro{frc::SPI::Port::kOnboardCS0};
+//frc::ADXRS450_Gyro gyro{frc::SPI::Port::kOnboardCS0};
+frc::AnalogGyro gyro{0};
 
 //Joysticks
 frc::Joystick JoyAccel1{0}, Xbox{1}, RaceWheel{2};
@@ -93,6 +95,7 @@ void Robot::RobotInit() {
   m_colorMatcher.AddColorMatch(kYellowTarget);
 
   //Gyro Setup
+  gyro.InitGyro();
   gyro.Calibrate();
 }
 
