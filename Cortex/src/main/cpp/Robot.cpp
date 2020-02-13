@@ -39,8 +39,9 @@ TalonFX RightMotorThree{0};
 frc::PowerDistributionPanel pdp{0};
 
 //Gyro
-frc::ADXRS450_Gyro gyro{frc::SPI::Port::kOnboardCS0};
+//frc::ADXRS450_Gyro gyro{frc::SPI::Port::kOnboardCS0};
 //frc::AnalogGyro gyro{0};
+frc::ADXRS450_Gyro gyro = ADXRS450_Gyro(SPI.Port kCS0);
 
 //Joysticks
 frc::Joystick JoyAccel1{0}, Xbox{1}, RaceWheel{2};
@@ -95,7 +96,6 @@ void Robot::RobotInit() {
   m_colorMatcher.AddColorMatch(kYellowTarget);
 
   //Gyro Setup
-  gyro = new ADXRS450_Gyro();
   //gyro.InitGyro();
   gyro.Calibrate();
 }
