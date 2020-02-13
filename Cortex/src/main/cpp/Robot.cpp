@@ -91,6 +91,9 @@ void Robot::RobotInit() {
   m_colorMatcher.AddColorMatch(kGreenTarget);
   m_colorMatcher.AddColorMatch(kRedTarget);
   m_colorMatcher.AddColorMatch(kYellowTarget);
+
+  //Gyro Setup
+  gyro.Calibrate();
 }
 
 /**
