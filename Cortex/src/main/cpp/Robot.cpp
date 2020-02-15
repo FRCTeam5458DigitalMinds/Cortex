@@ -330,8 +330,8 @@ void Robot::TeleopPeriodic() {
   } 
    //Regular Turning
   else if((WheelX < -0.05 || WheelX > 0.05) && (JoyY > 0.05 || JoyY < -0.05)){
-    LeftMotorsSpeed(accelerationSpeed + accelerationSpeed * WheelX);
-    RightMotorsSpeed(accelerationSpeed - accelerationSpeed * WheelX);
+    LeftMotorsSpeed(accelerationSpeed + fabs(accelerationSpeed) * WheelX);
+    RightMotorsSpeed(accelerationSpeed - fabs(accelerationSpeed) * WheelX);
   }
   //Code for driving straight  
   else if (JoyY > 0.05 || JoyY < -0.05){
