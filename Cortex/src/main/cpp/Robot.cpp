@@ -37,9 +37,6 @@ TalonFX RightMotorThree{0};
 //PDP
 frc::PowerDistributionPanel pdp{0};
 
-//Color Sensor
-TalonSRX colorMotor{5};
-
 //Gyro
 frc::ADXRS450_Gyro *gyro;
 
@@ -208,11 +205,6 @@ void rotationalAcceleration() {
 
   rotationalAcceleration
   LeftMotorsSpeed(motorAccelerationSpeed);
-
-  Steps:
-  1. correct driving during teleop
-  2. correct turn function so it goes until sum angle = 180
-  3. make turn function so it does sqrt function
   */
 } 
 
@@ -405,10 +397,9 @@ void Robot::TeleopPeriodic() {
   //Putting values into Shuffleboard
   frc::SmartDashboard::PutNumber("Gyro Angle", gyro->GetAngle());
   frc::SmartDashboard::PutNumber("Gyro Rate", gyro->GetRate());
-  //Get encoder values from falcons (built in encoders) and other motors
+  //Get encoder values from falcons (built in encoders)
   frc::SmartDashboard::PutNumber("RightEncoderOne", RightMotorOne.GetSelectedSensorPosition());
   frc::SmartDashboard::PutNumber("LeftEncoderOne", LeftMotorOne.GetSelectedSensorPosition());
-  frc::SmartDashboard::PutNumber("ColorEncoder", colorMotor.GetSelectedSensorPosition());
   //Get the current speed of each side
   frc::SmartDashboard::PutNumber("RightMotorSpeed", RightMotorOne.GetMotorOutputPercent());
   frc::SmartDashboard::PutNumber("LeftMotorsSpeed", LeftMotorOne.GetMotorOutputPercent());
