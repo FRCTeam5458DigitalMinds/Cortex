@@ -16,7 +16,6 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/Joystick.h>
 #include <frc/ADXRS450_Gyro.h>
-//#include <frc/AnalogGyro.h>
 //Color Sensor
 #include <frc/util/color.h>
 #include <rev/ColorSensorV3.h>
@@ -39,11 +38,7 @@ TalonFX RightMotorThree{0};
 frc::PowerDistributionPanel pdp{0};
 
 //Gyro
-//frc::ADXRS450_Gyro gyro{frc::SPI::Port::kOnboardCS0};
-//frc::AnalogGyro gyro{0};
-//frc::ADXRS450_Gyro adrxs450_Gyro;
-//frc::ADXRS450_Gyro gyro = ADXRS450_Gyro(SPI.Port kCS0);
-//ADXRS450_Gyro(SPI.Port kCS0);
+frc::ADXRS450_Gyro *gyro;
 
 //Joysticks
 frc::Joystick JoyAccel1{0}, Xbox{1}, RaceWheel{2};
@@ -94,6 +89,9 @@ void Robot::RobotInit() {
   frc::SmartDashboard::PutData("Auto Modes", &m_chooser);
   srx.Set(ControlMode::PercentOutput, 0);
 
+  gyro = new frc::ADXRS450_Gyro();
+  gyro->Reset();
+  
   //Color Sensor
   m_colorMatcher.AddColorMatch(kBlueTarget);
   m_colorMatcher.AddColorMatch(kGreenTarget);
@@ -359,7 +357,7 @@ void Robot::TeleopPeriodic() {
   }
 
   //Putting values into Shuffleboard
-  //frc::SmartDashboard::PutNumber("Gyro Angle", gyro.GetAngle());
+  frc::SmartDashboard::PutNumber("Gyro Angle", gyro->GetAngle());
   //Get encoder values from falcons (built in encoders)
   frc::SmartDashboard::PutNumber("RightEncoderOne", RightMotorOne.GetSelectedSensorPosition());
   frc::SmartDashboard::PutNumber("LeftEncoderOne", LeftMotorOne.GetSelectedSensorPosition());
