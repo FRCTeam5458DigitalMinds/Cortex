@@ -342,10 +342,6 @@ void Robot::TeleopPeriodic() {
     //Resets Acceleration
     isAccelTimeStampSet = false;
     accelerationSpeed = 0;
-    accelTimeStamp = 0;
-    changeInY = 0;
-    accelStartSpeed = 0;
-    deltaSpeed = 0;
   }
 
   //Putting values into Shuffleboard
