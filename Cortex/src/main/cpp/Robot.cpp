@@ -387,8 +387,8 @@ void Robot::TeleopPeriodic() {
   }
   //Code for driving straight  
   else if (JoyY > 0.05 || JoyY < -0.05){
-    LeftMotorsSpeed(accelerationSpeed /*- correctionAngle*/);                 
-    RightMotorsSpeed(accelerationSpeed /*- correctionAngle*/);
+    LeftMotorsSpeed(accelerationSpeed);                 
+    RightMotorsSpeed(accelerationSpeed);
   } 
   //Code for if nothing is pressed
   else {
