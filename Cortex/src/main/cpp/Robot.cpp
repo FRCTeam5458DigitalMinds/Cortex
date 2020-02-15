@@ -60,6 +60,11 @@ double deltaSpeed;
 bool isAccelTimeStampSet;
 bool wasInverted;
 
+//Gyro Variables
+float gyroFact;
+float turnFact;
+float lastSumAngle;
+
 //Wheel Diameter: between 6.1 and 6.2 (6.15)
 //Functions
 void LeftMotorsSpeed(double speed) {
@@ -230,6 +235,11 @@ void Robot::AutonomousPeriodic() {
     // Custom Auto goes here
   } else {
     // Default Auto goes here
+    // Gyro Correction variables
+    float sumAngle = gyro->GetAngle();
+		float derivAngle = sumAngle - lastSumAngle;
+		float correctionAngle = (sumAngle * 0.1) + (derivAngle * .2);
+
     frc::SmartDashboard::PutNumber("RightEncoderOne", RightMotorOne.GetSelectedSensorPosition());
     frc::SmartDashboard::PutNumber("LeftEncoderOne", LeftMotorOne.GetSelectedSensorPosition());
 
@@ -307,6 +317,11 @@ void accelerate(double percentPerSecond, double yInput){
 }
 
 void Robot::TeleopPeriodic() {
+  //Gyro Correction variables
+  float sumAngle = gyro->GetAngle();
+	float derivAngle = sumAngle - lastSumAngle;
+	float correctionAngle = (sumAngle * 0.1) + (derivAngle * .2);
+
   //Color Sensor Code
   frc::Color detectedColor = m_colorSensor.GetColor();
   std::string colorString;
@@ -359,13 +374,13 @@ void Robot::TeleopPeriodic() {
   } 
    //Regular Turning
   else if((WheelX < -0.05 || WheelX > 0.05) && (JoyY > 0.05 || JoyY < -0.05)){
-    LeftMotorsSpeed(accelerationSpeed + fabs(accelerationSpeed) * WheelX);
-    RightMotorsSpeed(accelerationSpeed - fabs(accelerationSpeed) * WheelX);
+    LeftMotorsSpeed(accelerationSpeed + fabs(accelerationSpeed) * (turnFact * WheelX));
+    RightMotorsSpeed(accelerationSpeed - fabs(accelerationSpeed) * (turnFact * WheelX));
   }
   //Code for driving straight  
   else if (JoyY > 0.05 || JoyY < -0.05){
-    LeftMotorsSpeed(accelerationSpeed);                 
-    RightMotorsSpeed(accelerationSpeed);
+    LeftMotorsSpeed(accelerationSpeed - correctionAngle);                 
+    RightMotorsSpeed(accelerationSpeed - correctionAngle);
   } 
   //Code for if nothing is pressed
   else {
