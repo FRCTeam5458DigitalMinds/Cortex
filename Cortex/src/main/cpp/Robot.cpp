@@ -249,20 +249,20 @@ void Robot::TeleopInit() {
 }
 
 //Teleop Functions
-void accelerate(double percentPerSecond){
+void accelerate(double percentPerSecond, double yInput){
   double averageMotorSpeed = (-(LeftMotorOne.GetMotorOutputPercent()) + RightMotorOne.GetMotorOutputPercent())/2;
   //JoyY or averageMotorSpeed < targetSpeed
-  if (!isAccelTimeStampSet || ((changeInY > 0 && -JoyAccel1.GetY() - averageMotorSpeed < 0) || (changeInY < 0 && -JoyAccel1.GetY() - averageMotorSpeed > 0))) {
+  if (!isAccelTimeStampSet || ((changeInY > 0 && yInput - averageMotorSpeed < 0) || (changeInY < 0 && yInput - averageMotorSpeed > 0))) {
     isAccelTimeStampSet = true;
     accelTimeStamp = frc::Timer::GetFPGATimestamp();
-    accelStartSpeed = -JoyAccel1.GetY();
+    accelStartSpeed = yInput;
   } else {
     deltaSpeed = (frc::Timer::GetFPGATimestamp() - accelTimeStamp) * percentPerSecond;
-    if (-JoyAccel1.GetY() > averageMotorSpeed && -JoyAccel1.GetY() > 0.05) {
+    if (yInput > averageMotorSpeed && yInput > 0.05) {
       accelerationSpeed = accelStartSpeed + deltaSpeed;
-    } else if (-JoyAccel1.GetY() < averageMotorSpeed && -JoyAccel1.GetY() < -0.05) {
+    } else if (yInput < averageMotorSpeed && yInput < -0.05) {
       accelerationSpeed = accelStartSpeed - deltaSpeed;
-    } else if (-JoyAccel1.GetY() > -0.05 && -JoyAccel1.GetY() < 0.05){
+    } else if (yInput > -0.05 && yInput < 0.05){
       isAccelTimeStampSet = false;
       accelerationSpeed = 0;
       accelTimeStamp = 0;
@@ -270,10 +270,10 @@ void accelerate(double percentPerSecond){
       accelStartSpeed = 0;
       deltaSpeed = 0;
     } else {
-      accelerationSpeed = -JoyAccel1.GetY();
+      accelerationSpeed = yInput;
     }
   }
-  changeInY = -JoyAccel1.GetY() - averageMotorSpeed;
+  changeInY = yInput - averageMotorSpeed;
 }
 
 void Robot::TeleopPeriodic() {
@@ -305,8 +305,6 @@ void Robot::TeleopPeriodic() {
   frc::SmartDashboard::PutNumber("Confidence", confidence);
   frc::SmartDashboard::PutString("Detected Color", colorString);
   
-  accelerate(0.1);
-  
   //Joysticks
   if (inverted){
     JoyY = JoyAccel1.GetY();
@@ -314,6 +312,8 @@ void Robot::TeleopPeriodic() {
     JoyY = -JoyAccel1.GetY();
   }
   WheelX = RaceWheel.GetX();
+
+  accelerate(0.25, JoyY);
 
   //Drive Code
   //Button 5 on the wheel activates point turning
@@ -323,23 +323,13 @@ void Robot::TeleopPeriodic() {
   } 
    //Regular Turning
   else if((WheelX < -0.05 || WheelX > 0.05) && (JoyY > 0.05 || JoyY < -0.05)){
-    if (!inverted){
-      LeftMotorsSpeed(accelerationSpeed + accelerationSpeed * WheelX);
-      RightMotorsSpeed(accelerationSpeed - accelerationSpeed * WheelX);
-    } else {
-      LeftMotorsSpeed(-accelerationSpeed + accelerationSpeed * WheelX);
-      RightMotorsSpeed(-accelerationSpeed - accelerationSpeed * WheelX);
-    }
+    LeftMotorsSpeed(accelerationSpeed + accelerationSpeed * WheelX);
+    RightMotorsSpeed(accelerationSpeed - accelerationSpeed * WheelX);
   }
   //Code for driving straight  
   else if (JoyY > 0.05 || JoyY < -0.05){
-    if (!inverted) {
-      LeftMotorsSpeed(accelerationSpeed);                 
-      RightMotorsSpeed(accelerationSpeed);
-    } else {
-      LeftMotorsSpeed(-accelerationSpeed);                 
-      RightMotorsSpeed(-accelerationSpeed);
-    }
+    LeftMotorsSpeed(accelerationSpeed);                 
+    RightMotorsSpeed(accelerationSpeed);
   } 
   //Code for if nothing is pressed
   else {
@@ -349,13 +339,6 @@ void Robot::TeleopPeriodic() {
   //Inverts values
   if (JoyAccel1.GetRawButtonPressed(1)){
     inverted = !inverted;
-    //Resets acceleration
-    isAccelTimeStampSet = false;
-    accelerationSpeed = 0;
-    accelTimeStamp = 0;
-    changeInY = 0;
-    accelStartSpeed = 0;
-    deltaSpeed = 0;
   }
 
   //Putting values into Shuffleboard
