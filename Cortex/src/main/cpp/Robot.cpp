@@ -41,8 +41,9 @@ frc::PowerDistributionPanel pdp{0};
 //Gyro
 //frc::ADXRS450_Gyro gyro{frc::SPI::Port::kOnboardCS0};
 //frc::AnalogGyro gyro{0};
-ADXRS450_Gyro adrxs450_Gyro;
-frc::ADXRS450_Gyro gyro = ADXRS450_Gyro(SPI.Port kCS0);
+//frc::ADXRS450_Gyro adrxs450_Gyro;
+//frc::ADXRS450_Gyro gyro = ADXRS450_Gyro(SPI.Port kCS0);
+//ADXRS450_Gyro(SPI.Port kCS0);
 
 //Joysticks
 frc::Joystick JoyAccel1{0}, Xbox{1}, RaceWheel{2};
@@ -98,7 +99,7 @@ void Robot::RobotInit() {
 
   //Gyro Setup
   //gyro.InitGyro();
-  gyro.Calibrate();
+  //gyro.Calibrate();
 }
 
 /**
@@ -322,13 +323,23 @@ void Robot::TeleopPeriodic() {
   } 
    //Regular Turning
   else if((WheelX < -0.05 || WheelX > 0.05) && (JoyY > 0.05 || JoyY < -0.05)){
-    LeftMotorsSpeed(accelerationSpeed + accelerationSpeed * WheelX);
-    RightMotorsSpeed(accelerationSpeed - accelerationSpeed * WheelX);
+    if (!inverted){
+      LeftMotorsSpeed(accelerationSpeed + accelerationSpeed * WheelX);
+      RightMotorsSpeed(accelerationSpeed - accelerationSpeed * WheelX);
+    } else {
+      LeftMotorsSpeed(-accelerationSpeed + accelerationSpeed * WheelX);
+      RightMotorsSpeed(-accelerationSpeed - accelerationSpeed * WheelX);
+    }
   }
   //Code for driving straight  
   else if (JoyY > 0.05 || JoyY < -0.05){
-    LeftMotorsSpeed(accelerationSpeed);                 
-    RightMotorsSpeed(accelerationSpeed);
+    if (!inverted) {
+      LeftMotorsSpeed(accelerationSpeed);                 
+      RightMotorsSpeed(accelerationSpeed);
+    } else {
+      LeftMotorsSpeed(-accelerationSpeed);                 
+      RightMotorsSpeed(-accelerationSpeed);
+    }
   } 
   //Code for if nothing is pressed
   else {
@@ -338,10 +349,17 @@ void Robot::TeleopPeriodic() {
   //Inverts values
   if (JoyAccel1.GetRawButtonPressed(1)){
     inverted = !inverted;
+    //Resets acceleration
+    isAccelTimeStampSet = false;
+    accelerationSpeed = 0;
+    accelTimeStamp = 0;
+    changeInY = 0;
+    accelStartSpeed = 0;
+    deltaSpeed = 0;
   }
 
   //Putting values into Shuffleboard
-  frc::SmartDashboard::PutNumber("Gyro Angle", gyro.GetAngle());
+  //frc::SmartDashboard::PutNumber("Gyro Angle", gyro.GetAngle());
   //Get encoder values from falcons (built in encoders)
   frc::SmartDashboard::PutNumber("RightEncoderOne", RightMotorOne.GetSelectedSensorPosition());
   frc::SmartDashboard::PutNumber("LeftEncoderOne", LeftMotorOne.GetSelectedSensorPosition());
