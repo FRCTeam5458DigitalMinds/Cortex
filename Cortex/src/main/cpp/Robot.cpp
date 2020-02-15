@@ -54,6 +54,7 @@ int currentAutoStep;
 bool inverted = false;
 bool isDelayTimeStampSet;
 double delayTimeStamp;
+double accelerationRate = 0.5;
 
 //Acceleration Variables
 double accelerationSpeed;
@@ -64,6 +65,7 @@ double deltaSpeed;
 bool isAccelTimeStampSet;
 bool wasInverted;
 
+//Wheel Diameter: between 6.1 and 6.2 (6.15)
 //Functions
 void LeftMotorsSpeed(double speed) {
   LeftMotorOne.Set(ControlMode::PercentOutput, -speed);
@@ -320,7 +322,13 @@ void Robot::TeleopPeriodic() {
   }
   WheelX = RaceWheel.GetX();
 
-  accelerate(0.25, JoyY);
+  if (RaceWheel.GetRawButtonPressed(8) && accelerationRate < 1) {
+    accelerationRate = accelerationRate + 0.1;
+  } else if (RaceWheel.GetRawButtonPressed(12) && accelerationRate > 0.1) {
+    accelerationRate = accelerationRate - 0.1;
+  }
+  
+  accelerate(accelerationRate, JoyY);
 
   //Drive Code
   //Button 5 on the wheel activates point turning
@@ -359,6 +367,7 @@ void Robot::TeleopPeriodic() {
   frc::SmartDashboard::PutNumber("RightMotorSpeed", RightMotorOne.GetMotorOutputPercent());
   frc::SmartDashboard::PutNumber("LeftMotorsSpeed", LeftMotorOne.GetMotorOutputPercent());
   frc::SmartDashboard::PutNumber("AccelerationSpeed", accelerationSpeed);
+  frc::SmartDashboard::PutNumber("Acceleration Rate", accelerationRate);
 }
 
 void Robot::TestPeriodic() {}
