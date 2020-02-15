@@ -249,6 +249,7 @@ void Robot::AutonomousPeriodic() {
       case 4:
       //delay(3);
       turn(180, 0.2);
+      frc::SmartDashboard::PutNumber("Gyro Rate", gyro->GetRate());
       break;
 
       case 5:
