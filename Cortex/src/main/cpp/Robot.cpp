@@ -41,6 +41,7 @@ frc::PowerDistributionPanel pdp{0};
 //Gyro
 //frc::ADXRS450_Gyro gyro{frc::SPI::Port::kOnboardCS0};
 //frc::AnalogGyro gyro{0};
+ADXRS450_Gyro adrxs450_Gyro;
 frc::ADXRS450_Gyro gyro = ADXRS450_Gyro(SPI.Port kCS0);
 
 //Joysticks
