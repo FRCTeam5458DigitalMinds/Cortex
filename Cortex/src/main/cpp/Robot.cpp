@@ -235,26 +235,24 @@ void Robot::AutonomousPeriodic() {
 
     switch (currentAutoStep){
       case 1:
-      //goDistance(24, 0.2);
+      goDistance(24, 0.2);
       break;
 
       case 2:
-      //delay(3);         
+      delay(3);         
       break;
 
       case 3:
-      //goDistance(24, 0.2);
+      goDistance(24, 0.2);
       break;
 
       case 4:
-      //delay(3);
-      turn(180, 0.2);
-      frc::SmartDashboard::PutNumber("Gyro Rate", gyro->GetRate());
+      delay(3);
       break;
 
       case 5:
-      //turn(180, 0.2);
-      delay(3);
+      turn(180, 0.2);
+      frc::SmartDashboard::PutNumber("Gyro Rate", gyro->GetRate());
       break;
 
       default:
