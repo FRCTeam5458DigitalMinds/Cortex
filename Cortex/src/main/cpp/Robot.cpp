@@ -339,6 +339,13 @@ void Robot::TeleopPeriodic() {
   //Inverts values
   if (JoyAccel1.GetRawButtonPressed(1)){
     inverted = !inverted;
+    //Resets Acceleration
+    isAccelTimeStampSet = false;
+    accelerationSpeed = 0;
+    accelTimeStamp = 0;
+    changeInY = 0;
+    accelStartSpeed = 0;
+    deltaSpeed = 0;
   }
 
   //Putting values into Shuffleboard
