@@ -62,6 +62,7 @@ double changeInY;
 double accelStartSpeed;
 double deltaSpeed;
 bool isAccelTimeStampSet;
+bool wasInverted;
 
 //Functions
 void LeftMotorsSpeed(double speed) {
@@ -256,6 +257,11 @@ void accelerate(double percentPerSecond, double yInput){
     isAccelTimeStampSet = true;
     accelTimeStamp = frc::Timer::GetFPGATimestamp();
     accelStartSpeed = yInput;
+    if ((wasInverted && inverted) || (!wasInverted && !inverted)){
+      accelStartSpeed = yInput;
+    } else if ((!wasInverted && inverted) || (wasInverted && !inverted)) {
+      accelStartSpeed = 0;
+    }
   } else {
     deltaSpeed = (frc::Timer::GetFPGATimestamp() - accelTimeStamp) * percentPerSecond;
     if (yInput > averageMotorSpeed && yInput > 0.05) {
@@ -274,6 +280,7 @@ void accelerate(double percentPerSecond, double yInput){
     }
   }
   changeInY = yInput - averageMotorSpeed;
+  wasInverted = inverted;
 }
 
 void Robot::TeleopPeriodic() {
@@ -340,8 +347,7 @@ void Robot::TeleopPeriodic() {
   if (JoyAccel1.GetRawButtonPressed(1)){
     inverted = !inverted;
     //Resets Acceleration
-    isAccelTimeStampSet = false;
-    accelerationSpeed = 0;
+    //accelStartSpeed = 0;
   }
 
   //Putting values into Shuffleboard
