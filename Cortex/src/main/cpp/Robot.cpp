@@ -180,6 +180,29 @@ void turn(double degrees, double speed){
   }
 }
 
+void rotationalAcceleration() {
+  /*
+  gyro->GetAngle();
+  gyro->GetRate();
+
+  What we know:
+  Radius of Wheel: 3 in
+  Rotation Rate: gyro->GetRate()
+  Motor Speed: ?
+
+  What we want to do:
+  Accelerate turning based on rotations of the wheel rather than percent power
+
+  Attempt:
+  double amountToAccelerate = sqrt(gyro->GetRate());
+  double motorAccelerationSpeed = amountToAccelerate (angular velocity) * 3 (3 in radius);
+
+
+  rotationalAcceleration
+  LeftMotorsSpeed(motorAccelerationSpeed);
+  */
+} 
+
 void delay(double seconds) {
   if (!isDelayTimeStampSet){
     delayTimeStamp = frc::Timer::GetFPGATimestamp();
@@ -212,23 +235,25 @@ void Robot::AutonomousPeriodic() {
 
     switch (currentAutoStep){
       case 1:
-      goDistance(24, 0.2);
+      //goDistance(24, 0.2);
       break;
 
       case 2:
-      delay(3);         
+      //delay(3);         
       break;
 
       case 3:
-      goDistance(24, 0.2);
+      //goDistance(24, 0.2);
       break;
 
       case 4:
-      delay(3);
+      //delay(3);
+      turn(180, 0.2);
       break;
 
       case 5:
-      turn(180, 0.2);
+      //turn(180, 0.2);
+      delay(3);
       break;
 
       default:
@@ -281,10 +306,6 @@ void accelerate(double percentPerSecond, double yInput){
   changeInY = yInput - averageMotorSpeed;
   wasInverted = inverted;
 }
-
-void rotationalAcceleration(double rotationRate, double xInput) {
-  gyro->GetRate();
-} 
 
 void Robot::TeleopPeriodic() {
   //Color Sensor Code
