@@ -322,7 +322,7 @@ void Robot::TeleopPeriodic() {
   }
   WheelX = RaceWheel.GetX();
 
-  if (RaceWheel.GetRawButtonPressed(8) && accelerationRate < 1) {
+  if (RaceWheel.GetRawButtonPressed(8) && accelerationRate < 0.95) {
     accelerationRate = accelerationRate + 0.1;
   } else if (RaceWheel.GetRawButtonPressed(12) && accelerationRate > 0.1) {
     accelerationRate = accelerationRate - 0.1;
