@@ -252,7 +252,6 @@ void Robot::TeleopInit() {
 //Teleop Functions
 void accelerate(double percentPerSecond, double yInput){
   double averageMotorSpeed = (-(LeftMotorOne.GetMotorOutputPercent()) + RightMotorOne.GetMotorOutputPercent())/2;
-  //JoyY or averageMotorSpeed < targetSpeed
   if (!isAccelTimeStampSet || ((changeInY > 0 && yInput - averageMotorSpeed < 0) || (changeInY < 0 && yInput - averageMotorSpeed > 0))) {
     isAccelTimeStampSet = true;
     accelTimeStamp = frc::Timer::GetFPGATimestamp();
@@ -282,6 +281,10 @@ void accelerate(double percentPerSecond, double yInput){
   changeInY = yInput - averageMotorSpeed;
   wasInverted = inverted;
 }
+
+void rotationalAcceleration(double rotationRate, double xInput) {
+  gyro->GetRate();
+} 
 
 void Robot::TeleopPeriodic() {
   //Color Sensor Code
@@ -358,6 +361,7 @@ void Robot::TeleopPeriodic() {
 
   //Putting values into Shuffleboard
   frc::SmartDashboard::PutNumber("Gyro Angle", gyro->GetAngle());
+  frc::SmartDashboard::PutNumber("Gyro Rate", gyro->GetRate());
   //Get encoder values from falcons (built in encoders)
   frc::SmartDashboard::PutNumber("RightEncoderOne", RightMotorOne.GetSelectedSensorPosition());
   frc::SmartDashboard::PutNumber("LeftEncoderOne", LeftMotorOne.GetSelectedSensorPosition());
