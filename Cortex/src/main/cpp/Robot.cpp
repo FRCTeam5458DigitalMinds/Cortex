@@ -369,7 +369,7 @@ void Robot::TeleopPeriodic() {
   //Gyro Correction variables
   float sumAngle = gyro->GetAngle();
 	float derivAngle = sumAngle - lastSumAngle;
-	float correctionAngle = (sumAngle * 0.1) + (derivAngle * .2);
+	float correctionAngle = (sumAngle * 0.1) + (derivAngle * .2); 
 
   //Color Sensor Code
   frc::Color detectedColor = m_colorSensor.GetColor();
@@ -433,8 +433,8 @@ void Robot::TeleopPeriodic() {
   }
   //Code for driving straight  
   else if (JoyY > 0.05 || JoyY < -0.05){
-    LeftMotorsSpeed(accelerationSpeed /*- correctionAngle*/);                 
-    RightMotorsSpeed(accelerationSpeed /*- correctionAngle*/);
+    LeftMotorsSpeed(accelerationSpeed - correctionAngle);                 
+    RightMotorsSpeed(accelerationSpeed - correctionAngle);
   } 
   //Code for if nothing is pressed
   else {
@@ -445,6 +445,8 @@ void Robot::TeleopPeriodic() {
   if (JoyAccel1.GetRawButtonPressed(1)){
     inverted = !inverted;
   }
+
+  lastSumAngle = sumAngle;
 
   //Putting values into Shuffleboard
   //Get encoder values from falcons (built in encoders) and other motors
