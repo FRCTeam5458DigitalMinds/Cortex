@@ -418,8 +418,13 @@ void Robot::TeleopPeriodic() {
   //Drive Code
   //Button 5 on the wheel activates point turning
   if (RaceWheel.GetRawButton(5)) {
-    LeftMotorsSpeed(WheelX);
-    RightMotorsSpeed(-WheelX);
+    if (WheelX > 0) {
+      LeftMotorsSpeed(WheelX * WheelX);
+      RightMotorsSpeed(-(WheelX * WheelX));
+    } else if (WheelX < 0) {
+      LeftMotorsSpeed(-(WheelX * WheelX));
+      RightMotorsSpeed(WheelX * WheelX);
+    }
   } 
   //Regular Turning
   else if((WheelX < -0.05 || WheelX > 0.05) && (JoyY > 0.05 || JoyY < -0.05)){
