@@ -219,6 +219,8 @@ turnAccel = (frc::Timer::GetFPGATimestamp() - autoTimeStamp) * motorAcceleration
  else if (gyro->GetAngle() > degrees && degrees < 0) {
    LeftMotorsSpeed(-speed);
    RightMotorsSpeed(speed);
+ } else {
+   currentAutoStep = currentAutoStep + 1;
  }
 }
 
