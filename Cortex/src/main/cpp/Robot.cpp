@@ -75,6 +75,7 @@ bool wasInverted;
 float gyroFact;
 float turnFact;
 float lastSumAngle;
+double correctionAngle;
 
 //Wheel Diameter: between 6.1 and 6.2 (6.15)
 
@@ -106,6 +107,7 @@ void Robot::RobotInit() {
   frc::SmartDashboard::PutData("Auto Modes", &m_chooser);
   srx.Set(ControlMode::PercentOutput, 0);
 
+  //Initialize Gyro
   gyro = new frc::ADXRS450_Gyro();
   gyro->Reset();
   
@@ -128,6 +130,13 @@ void Robot::RobotPeriodic() {
   //Put values into shuffleboard
   frc::SmartDashboard::PutNumber("Gyro Angle", gyro->GetAngle());
   frc::SmartDashboard::PutNumber("Gyro Rate", gyro->GetRate());
+
+  //Correction angle
+  if (gyro->GetRate() > 0) {
+    correctionAngle = gyro->GetRate()/360;
+  } else if (gyro->GetRate() < 0 ){
+    correctionAngle = gyro->GetRate()/360;
+  } 
 }
 
 /**
@@ -287,7 +296,6 @@ void Robot::AutonomousPeriodic() {
     // Gyro Correction variables
     float sumAngle = gyro->GetAngle();
 		float derivAngle = sumAngle - lastSumAngle;
-		float correctionAngle = (sumAngle * 0.1) + (derivAngle * .2);
 
     frc::SmartDashboard::PutNumber("RightEncoderOne", RightMotorOne.GetSelectedSensorPosition());
     frc::SmartDashboard::PutNumber("LeftEncoderOne", LeftMotorOne.GetSelectedSensorPosition());
@@ -369,7 +377,6 @@ void Robot::TeleopPeriodic() {
   //Gyro Correction variables
   float sumAngle = gyro->GetAngle();
 	float derivAngle = sumAngle - lastSumAngle;
-	float correctionAngle = (sumAngle * 0.1) + (derivAngle * .2); 
 
   //Color Sensor Code
   frc::Color detectedColor = m_colorSensor.GetColor();
@@ -433,8 +440,8 @@ void Robot::TeleopPeriodic() {
   }
   //Code for driving straight  
   else if (JoyY > 0.05 || JoyY < -0.05){
-    LeftMotorsSpeed(accelerationSpeed - correctionAngle);                 
-    RightMotorsSpeed(accelerationSpeed - correctionAngle);
+    LeftMotorsSpeed(accelerationSpeed - (fabs(accelerationSpeed) * correctionAngle));                 
+    RightMotorsSpeed(accelerationSpeed + (fabs(accelerationSpeed) * correctionAngle));
   } 
   //Code for if nothing is pressed
   else {
