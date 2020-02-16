@@ -124,7 +124,11 @@ void Robot::RobotInit() {
  * <p> This runs after the mode specific periodic functions, but before
  * LiveWindow and SmartDashboard integrated updating.
  */
-void Robot::RobotPeriodic() {}
+void Robot::RobotPeriodic() {
+  //Put values into shuffleboard
+  frc::SmartDashboard::PutNumber("Gyro Angle", gyro->GetAngle());
+  frc::SmartDashboard::PutNumber("Gyro Rate", gyro->GetRate());
+}
 
 /**
  * This autonomous (along with the chooser code above) shows how to select
@@ -306,7 +310,6 @@ void Robot::AutonomousPeriodic() {
 
       case 5:
       turn(180, 0.2);
-      frc::SmartDashboard::PutNumber("Gyro Angle", gyro->GetAngle());
       break;
 
       default:
@@ -437,8 +440,6 @@ void Robot::TeleopPeriodic() {
   }
 
   //Putting values into Shuffleboard
-  frc::SmartDashboard::PutNumber("Gyro Angle", gyro->GetAngle());
-  frc::SmartDashboard::PutNumber("Gyro Rate", gyro->GetRate());
   //Get encoder values from falcons (built in encoders) and other motors
   frc::SmartDashboard::PutNumber("RightEncoderOne", RightMotorOne.GetSelectedSensorPosition());
   frc::SmartDashboard::PutNumber("LeftEncoderOne", LeftMotorOne.GetSelectedSensorPosition());
