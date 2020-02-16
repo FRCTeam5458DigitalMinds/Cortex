@@ -54,6 +54,14 @@ bool isDelayTimeStampSet;
 double delayTimeStamp;
 double accelerationRate = 0.5;
 
+//Auto Variables
+bool isTurnTimeStampSet;
+double autoTimeStamp;
+double turnSpeed;
+double turnAccel;
+double motorAccelerationSpeed;
+double amountToAccelerate;
+
 //Acceleration Variables
 double accelerationSpeed;
 double accelTimeStamp;
@@ -69,6 +77,7 @@ float turnFact;
 float lastSumAngle;
 
 //Wheel Diameter: between 6.1 and 6.2 (6.15)
+
 //Functions
 void LeftMotorsSpeed(double speed) {
   LeftMotorOne.Set(ControlMode::PercentOutput, -speed);
@@ -105,10 +114,6 @@ void Robot::RobotInit() {
   m_colorMatcher.AddColorMatch(kGreenTarget);
   m_colorMatcher.AddColorMatch(kRedTarget);
   m_colorMatcher.AddColorMatch(kYellowTarget);
-
-  //Gyro Setup
-  //gyro.InitGyro();
-  //gyro.Calibrate();
 }
 
 /**
@@ -172,7 +177,7 @@ void goDistance(double inches, double speed) {
   }
 }
 
-void turn(double degrees, double speed){
+void turn(/*double degrees,*/double speed){
   /*double encoderUnits = (degrees * 26000)/360;
   double averageEncoderValue = (LeftMotorOne.GetSelectedSensorPosition() + RightMotorOne.GetSelectedSensorPosition())/2;
   if (averageEncoderValue > -encoderUnits && encoderUnits > 0) {
@@ -187,14 +192,34 @@ void turn(double degrees, double speed){
     currentAutoStep = currentAutoStep + 1;
   }
   */
- if (gyro->GetAngle() < degrees && degrees > 0) {
+
+//velocity = angular velocity (deg/sec) * radius (in);
+amountToAccelerate = sqrt(gyro->GetRate());
+//Motor Accel Speed in inches/sec
+motorAccelerationSpeed = (amountToAccelerate * 3 * 6.28)/360;
+turnAccel = (frc::Timer::GetFPGATimestamp() - autoTimeStamp) * motorAccelerationSpeed;
+
+//If motorAccelSpeed is positive, add the change in acceleration to it and set the motors to that value
+ if (motorAccelerationSpeed > 0) {
+   turnSpeed = motorAccelerationSpeed + turnAccel;
+   LeftMotorsSpeed(turnSpeed);
+   RightMotorsSpeed(-turnSpeed);
+ } else if (motorAccelerationSpeed < 0) {
+   turnSpeed = motorAccelerationSpeed - turnAccel;
+   LeftMotorsSpeed(-turnSpeed);
+   RightMotorsSpeed(turnSpeed);
+ } else {
+   currentAutoStep = currentAutoStep + 1;
+ }
+
+ /*if (gyro->GetAngle() < degrees && degrees > 0) {
    LeftMotorsSpeed(speed);
    RightMotorsSpeed(-speed);
  }
  else if (gyro->GetAngle() > degrees && degrees < 0) {
    LeftMotorsSpeed(-speed);
    RightMotorsSpeed(speed);
- }
+ }*/
 }
 
 void rotationalAcceleration() {
@@ -278,7 +303,8 @@ void Robot::AutonomousPeriodic() {
       break;
 
       case 5:
-      turn(180, 0.2);
+      //turn(180, 0.2);
+      turn(motorAccelerationSpeed);
       frc::SmartDashboard::PutNumber("Gyro Rate", gyro->GetRate());
       break;
 
