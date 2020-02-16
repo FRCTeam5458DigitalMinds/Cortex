@@ -158,6 +158,7 @@ void Robot::AutonomousInit() {
     delayTimeStamp = 0;
     LeftMotorOne.SetSelectedSensorPosition(0);
     RightMotorOne.SetSelectedSensorPosition(0);
+    gyro->Reset();
   }
 }
 
@@ -328,6 +329,7 @@ void Robot::TeleopInit() {
   changeInY = 0;
   accelStartSpeed = 0;
   deltaSpeed = 0;
+  gyro->Reset();
 }
 
 //Teleop Functions
@@ -421,13 +423,13 @@ void Robot::TeleopPeriodic() {
   } 
    //Regular Turning
   else if((WheelX < -0.05 || WheelX > 0.05) && (JoyY > 0.05 || JoyY < -0.05)){
-    LeftMotorsSpeed(accelerationSpeed + (fabs(accelerationSpeed) * (/*turnFact * */WheelX)));
-    RightMotorsSpeed(accelerationSpeed - (fabs(accelerationSpeed) * (/*turnFact * */WheelX)));
+    LeftMotorsSpeed(accelerationSpeed + (fabs(accelerationSpeed) * (turnFact * WheelX)));
+    RightMotorsSpeed(accelerationSpeed - (fabs(accelerationSpeed) * (turnFact * WheelX)));
   }
   //Code for driving straight  
   else if (JoyY > 0.05 || JoyY < -0.05){
-    LeftMotorsSpeed(accelerationSpeed /*+ correctionAngle*/);                 
-    RightMotorsSpeed(accelerationSpeed /*+ correctionAngle*/);
+    LeftMotorsSpeed(accelerationSpeed + correctionAngle);                 
+    RightMotorsSpeed(accelerationSpeed + correctionAngle);
   } 
   //Code for if nothing is pressed
   else {
