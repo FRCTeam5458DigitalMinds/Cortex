@@ -177,7 +177,7 @@ void goDistance(double inches, double speed) {
   }
 }
 
-void turn(/*double degrees,*/double speed){
+void turn(double degrees, double speed){
   /*double encoderUnits = (degrees * 26000)/360;
   double averageEncoderValue = (LeftMotorOne.GetSelectedSensorPosition() + RightMotorOne.GetSelectedSensorPosition())/2;
   if (averageEncoderValue > -encoderUnits && encoderUnits > 0) {
@@ -192,7 +192,7 @@ void turn(/*double degrees,*/double speed){
     currentAutoStep = currentAutoStep + 1;
   }
   */
-
+/*
 //velocity = angular velocity (deg/sec) * radius (in);
 amountToAccelerate = sqrt(gyro->GetRate());
 //Motor Accel Speed in inches/sec
@@ -211,15 +211,15 @@ turnAccel = (frc::Timer::GetFPGATimestamp() - autoTimeStamp) * motorAcceleration
  } else {
    currentAutoStep = currentAutoStep + 1;
  }
-
- /*if (gyro->GetAngle() < degrees && degrees > 0) {
+*/
+ if (gyro->GetAngle() < degrees && degrees > 0) {
    LeftMotorsSpeed(speed);
    RightMotorsSpeed(-speed);
  }
  else if (gyro->GetAngle() > degrees && degrees < 0) {
    LeftMotorsSpeed(-speed);
    RightMotorsSpeed(speed);
- }*/
+ }
 }
 
 void rotationalAcceleration() {
@@ -229,7 +229,7 @@ void rotationalAcceleration() {
 
   What we know:
   Radius of Wheel: 3 in
-  Rotation Rate: gyro->GetRate()
+  Rotation Rate: gyro->GetRate() in deg/sec
   Motor Speed: ?
 
   What we want to do:
@@ -303,8 +303,7 @@ void Robot::AutonomousPeriodic() {
       break;
 
       case 5:
-      //turn(180, 0.2);
-      turn(motorAccelerationSpeed);
+      turn(180, 0.2);
       frc::SmartDashboard::PutNumber("Gyro Rate", gyro->GetRate());
       break;
 
