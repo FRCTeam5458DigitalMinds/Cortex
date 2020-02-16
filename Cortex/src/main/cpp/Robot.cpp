@@ -306,7 +306,7 @@ void Robot::AutonomousPeriodic() {
 
       case 5:
       turn(180, 0.2);
-      frc::SmartDashboard::PutNumber("Gyro Rate", gyro->GetRate());
+      frc::SmartDashboard::PutNumber("Gyro Angle", gyro->GetAngle());
       break;
 
       default:
@@ -423,8 +423,8 @@ void Robot::TeleopPeriodic() {
   }
   //Code for driving straight  
   else if (JoyY > 0.05 || JoyY < -0.05){
-    LeftMotorsSpeed(accelerationSpeed);                 
-    RightMotorsSpeed(accelerationSpeed);
+    LeftMotorsSpeed(accelerationSpeed /*+ correctionAngle*/);                 
+    RightMotorsSpeed(accelerationSpeed /*+ correctionAngle*/);
   } 
   //Code for if nothing is pressed
   else {
