@@ -417,8 +417,8 @@ void Robot::TeleopPeriodic() {
   } 
    //Regular Turning
   else if((WheelX < -0.05 || WheelX > 0.05) && (JoyY > 0.05 || JoyY < -0.05)){
-    LeftMotorsSpeed(accelerationSpeed + (fabs(accelerationSpeed) * (turnFact * WheelX)));
-    RightMotorsSpeed(accelerationSpeed - (fabs(accelerationSpeed) * (turnFact * WheelX)));
+    LeftMotorsSpeed(accelerationSpeed + (fabs(accelerationSpeed) * (/*turnFact * */WheelX)));
+    RightMotorsSpeed(accelerationSpeed - (fabs(accelerationSpeed) * (/*turnFact * */WheelX)));
   }
   //Code for driving straight  
   else if (JoyY > 0.05 || JoyY < -0.05){
@@ -433,8 +433,6 @@ void Robot::TeleopPeriodic() {
   //Inverts values
   if (JoyAccel1.GetRawButtonPressed(1)){
     inverted = !inverted;
-    //Resets Acceleration
-    //accelStartSpeed = 0;
   }
 
   //Putting values into Shuffleboard
