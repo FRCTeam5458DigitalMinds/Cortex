@@ -177,12 +177,12 @@ void goDistance(double inches, double speed) {
   double averageEncoderValue = (-(LeftMotorOne.GetSelectedSensorPosition()) + RightMotorOne.GetSelectedSensorPosition())/2;
   //double distanceLeft = encoderUnits - ((LeftMotorOne.GetSelectedSensorPosition() + RightMotorOne.GetSelectedSensorPosition()) / 2)
   if (averageEncoderValue < encoderUnits && encoderUnits > 0) {
-    LeftMotorsSpeed(speed);
-    RightMotorsSpeed(speed);
+    LeftMotorsSpeed(speed - (fabs(speed) * correctionAngle));                 
+    RightMotorsSpeed(speed + (fabs(speed) * correctionAngle));
   }
   else if (averageEncoderValue > encoderUnits && encoderUnits < 0) {
-    LeftMotorsSpeed(-speed);
-    RightMotorsSpeed(-speed);
+    LeftMotorsSpeed(-speed - (fabs(speed) * correctionAngle));                 
+    RightMotorsSpeed(-speed + (fabs(speed) * correctionAngle));
   }
   else {
     LeftMotorOne.SetSelectedSensorPosition(0);
