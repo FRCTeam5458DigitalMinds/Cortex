@@ -92,6 +92,13 @@ void RightMotorsSpeed(double speed) {
   RightMotorThree.Set(ControlMode::PercentOutput, speed);
 }
 
+void music() {
+  /*If we ever have extra time,
+  we can make music with falcons 
+  http://www.ctr-electronics.com/downloads/api/cpp/html/classctre_1_1phoenix_1_1music_1_1_orchestra.html#a5e2089c7e3c582566f5da6ffa4d79787
+  */
+}
+
 //Color Sensor
 static constexpr auto i2cPort = frc::I2C::Port::kOnboard;
 rev::ColorSensorV3 m_colorSensor{i2cPort};
@@ -257,6 +264,11 @@ turnAccel = (frc::Timer::GetFPGATimestamp() - autoTimeStamp) * motorAcceleration
 
 void rotationalAcceleration() {
   /*
+  Robot following semicircle path:
+  1. Keep gyro rate constant by checking rate in current frame and last frame and changing
+  turning accordingly
+  2. figure out what our x and y values are to adapt semicircle function and use it for auto
+
   gyro->GetAngle();
   gyro->GetRate();
 
