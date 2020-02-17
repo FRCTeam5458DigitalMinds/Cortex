@@ -155,9 +155,9 @@ void drivingCorrection(){
   } else {
     //Correction angle
     if (gyro->GetRate() > 0) {
-      correctionAngle = gyro->GetAngle()/90;
+      correctionAngle = gyro->GetAngle()/45;
     } else if (gyro->GetRate() < 0) {
-      correctionAngle = gyro->GetAngle()/90;
+      correctionAngle = gyro->GetAngle()/45;
     } 
   }
 }
