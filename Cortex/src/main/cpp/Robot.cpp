@@ -133,9 +133,9 @@ void Robot::RobotPeriodic() {
 
   //Correction angle
   if (gyro->GetRate() > 0) {
-    correctionAngle = gyro->GetRate()/90;
+    correctionAngle = gyro->GetRate()/45;
   } else if (gyro->GetRate() < 0) {
-    correctionAngle = gyro->GetRate()/90;
+    correctionAngle = gyro->GetRate()/45;
   } 
 }
 
