@@ -131,6 +131,7 @@ void Robot::RobotPeriodic() {
   //Put values into shuffleboard
   frc::SmartDashboard::PutNumber("Gyro Angle", gyro->GetAngle());
   frc::SmartDashboard::PutNumber("Gyro Rate", gyro->GetRate());
+  frc::SmartDashboard::PutNumber("Correction Angle", correctionAngle);
 
   //Correction angle
   if (gyro->GetRate() > 0) {
@@ -147,9 +148,9 @@ void drivingCorrection(){
   } else {
     //Correction angle
     if (gyro->GetRate() > 0) {
-      correctionAngle = gyro->GetAngle()/180;
+      correctionAngle = gyro->GetAngle()/90;
     } else if (gyro->GetRate() < 0) {
-      correctionAngle = gyro->GetAngle()/180;
+      correctionAngle = gyro->GetAngle()/90;
     } 
   }
 }
@@ -200,6 +201,7 @@ void goDistance(double inches, double speed) {
     RightMotorsSpeed(-speed + (fabs(speed) * correctionAngle));
   }
   else {
+    gyro->Reset();
     LeftMotorOne.SetSelectedSensorPosition(0);
     RightMotorOne.SetSelectedSensorPosition(0);
     currentAutoStep = currentAutoStep + 1;
@@ -241,11 +243,11 @@ turnAccel = (frc::Timer::GetFPGATimestamp() - autoTimeStamp) * motorAcceleration
    currentAutoStep = currentAutoStep + 1;
  }
 */
- if (gyro->GetAngle() < degrees && degrees > 0) {
+ if (gyro->GetAngle() < degrees - 30 && degrees > 0) {
    LeftMotorsSpeed(speed);
    RightMotorsSpeed(-speed);
  }
- else if (gyro->GetAngle() > degrees && degrees < 0) {
+ else if (gyro->GetAngle() > degrees + 30 && degrees < 0) {
    LeftMotorsSpeed(-speed);
    RightMotorsSpeed(speed);
  } else {
@@ -317,6 +319,7 @@ void Robot::AutonomousPeriodic() {
 
     switch (currentAutoStep){
       case 1:
+      drivingCorrection();
       goDistance(24, 0.2);
       break;
 
@@ -325,6 +328,7 @@ void Robot::AutonomousPeriodic() {
       break;
 
       case 3:
+      drivingCorrection();
       goDistance(24, 0.2);
       break;
 
