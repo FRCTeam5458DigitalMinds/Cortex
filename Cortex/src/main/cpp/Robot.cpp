@@ -136,7 +136,7 @@ void Robot::RobotPeriodic() {
   if (gyro->GetRate() > 0) {
     correctionAngle = gyro->GetAngle()/180;
   } else if (gyro->GetRate() < 0) {
-    correctionAngle = gyro->GetRate()/180;
+    correctionAngle = gyro->GetAngle()/180;
   } 
 }
 
@@ -149,7 +149,7 @@ void drivingCorrection(){
     if (gyro->GetRate() > 0) {
       correctionAngle = gyro->GetAngle()/180;
     } else if (gyro->GetRate() < 0) {
-      correctionAngle = gyro->GetRate()/180;
+      correctionAngle = gyro->GetAngle()/180;
     } 
   }
 }
@@ -435,7 +435,11 @@ void Robot::TeleopPeriodic() {
     accelerationRate = accelerationRate - 0.1;
   }
   
+  //Runs accelerate function during periodic
   accelerate(accelerationRate, JoyY);
+
+  // Runs correction function during periodic
+  drivingCorrection();
 
   //Drive Code
   //Button 5 on the wheel activates point turning
