@@ -76,6 +76,7 @@ float gyroFact;
 float turnFact;
 float lastSumAngle;
 double correctionAngle;
+bool isGyroReset;
 
 //Wheel Diameter: between 6.1 and 6.2 (6.15)
 
@@ -133,10 +134,24 @@ void Robot::RobotPeriodic() {
 
   //Correction angle
   if (gyro->GetRate() > 0) {
-    correctionAngle = gyro->GetRate()/45;
+    correctionAngle = gyro->GetAngle()/180;
   } else if (gyro->GetRate() < 0) {
-    correctionAngle = gyro->GetRate()/45;
+    correctionAngle = gyro->GetRate()/180;
   } 
+}
+
+void drivingCorrection(){
+  if (!isGyroReset) {
+    gyro->Reset();
+    isGyroReset = true;
+  } else {
+    //Correction angle
+    if (gyro->GetRate() > 0) {
+      correctionAngle = gyro->GetAngle()/180;
+    } else if (gyro->GetRate() < 0) {
+      correctionAngle = gyro->GetRate()/180;
+    } 
+  }
 }
 
 /**
@@ -439,7 +454,7 @@ void Robot::TeleopPeriodic() {
     RightMotorsSpeed(accelerationSpeed - (fabs(accelerationSpeed) * WheelX));
   }
   //Code for driving straight  
-  else if (JoyY > 0.05 || JoyY < -0.05){
+  else if (JoyY > 0.05 || JoyY < -0.05) {
     LeftMotorsSpeed(accelerationSpeed - (fabs(accelerationSpeed) * correctionAngle));                 
     RightMotorsSpeed(accelerationSpeed + (fabs(accelerationSpeed) * correctionAngle));
   } 
