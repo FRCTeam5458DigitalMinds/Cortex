@@ -145,6 +145,7 @@ void Robot::RobotPeriodic() {
   frc::SmartDashboard::PutNumber("Gyro Angle", gyro->GetAngle());
   frc::SmartDashboard::PutNumber("Gyro Rate", gyro->GetRate());
   frc::SmartDashboard::PutNumber("Correction Angle", correctionAngle);
+  frc::SmartDashboard::PutNumber("Some Angle", someAngle);
   /*
   //Now that we're using drivingCorrection() function during teleop and auto, we shouldn't need this
   //Correction angle
@@ -289,13 +290,6 @@ turnAccel = (frc::Timer::GetFPGATimestamp() - autoTimeStamp) * motorAcceleration
       }
     } else if (someAngle == 0) {
       someAngle = gyro->GetAngle();
-      if (gyro->GetAngle() < degrees){
-        LeftMotorsSpeed(maxSpeed);
-        RightMotorsSpeed(-maxSpeed);
-      } else if (gyro->GetAngle() > degrees){
-        LeftMotorsSpeed(-maxSpeed);
-        RightMotorsSpeed(maxSpeed);
-      } 
     } else if (fabs(gyro->GetAngle()) < fabs(degrees) - fabs(someAngle)) {
       if (gyro->GetAngle() < degrees){
         LeftMotorsSpeed(maxSpeed);
