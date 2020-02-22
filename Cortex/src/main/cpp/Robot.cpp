@@ -197,11 +197,16 @@ void Robot::AutonomousInit() {
     LeftMotorOne.SetSelectedSensorPosition(0);
     RightMotorOne.SetSelectedSensorPosition(0);
     gyro->Reset();
+
+    //Reset correction variables
+    isStartingAngleSet = false;
+    startingAngle = 0;
   }
 }
 
 //Autonomous Functions
 void goDistance(double inches, double speed) {
+  drivingCorrection();
   double encoderUnits = inches * 4000/12;
   double averageEncoderValue = (-(LeftMotorOne.GetSelectedSensorPosition()) + RightMotorOne.GetSelectedSensorPosition())/2;
   //double distanceLeft = encoderUnits - ((LeftMotorOne.GetSelectedSensorPosition() + RightMotorOne.GetSelectedSensorPosition()) / 2)
@@ -214,7 +219,8 @@ void goDistance(double inches, double speed) {
     RightMotorsSpeed(-speed + (fabs(speed) * correctionAngle));
   }
   else {
-    gyro->Reset();
+    isStartingAngleSet = false;
+    startingAngle = 0;
     LeftMotorOne.SetSelectedSensorPosition(0);
     RightMotorOne.SetSelectedSensorPosition(0);
     currentAutoStep = currentAutoStep + 1;
