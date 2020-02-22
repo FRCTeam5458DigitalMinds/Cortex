@@ -282,7 +282,7 @@ turnAccel = (frc::Timer::GetFPGATimestamp() - autoTimeStamp) * motorAcceleration
     turnTimeStamp = frc::Timer::GetFPGATimestamp();
     isTurnTimeStampSet = true;
   } else {
-    if (fabs(averageMotorSpeed) < maxSpeed && fabs(gyro->GetAngle()) < fabs(degrees/2)) {
+    if (fabs(averageMotorSpeed) < maxSpeed && fabs(gyro->GetAngle()) < fabs(degrees/4)) {
       if (gyro->GetAngle() < degrees){
         LeftMotorsSpeed((frc::Timer::GetFPGATimestamp() - turnTimeStamp) * percentPerSecond);
         RightMotorsSpeed(-(frc::Timer::GetFPGATimestamp() - turnTimeStamp) * percentPerSecond); 
@@ -513,7 +513,7 @@ void Robot::TeleopPeriodic() {
   
   //Drive Code
   //Button 5 on the wheel activates point turning
-  if (RaceWheel.GetRawButton(7)) {
+  if (RaceWheel.GetRawButton(5)) {
     if (WheelX > 0) {
       LeftMotorsSpeed(WheelX * WheelX);
       RightMotorsSpeed(-(WheelX * WheelX));
