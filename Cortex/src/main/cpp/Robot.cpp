@@ -20,6 +20,7 @@
 #include <frc/util/color.h>
 #include <rev/ColorSensorV3.h>
 #include <rev/ColorMatch.h>
+using namespace std; 
 
 //Declarations
 TalonSRX srx = {0};
@@ -46,6 +47,7 @@ frc::ADXRS450_Gyro *gyro;
 //Joysticks
 frc::Joystick JoyAccel1{0}, Xbox{1}, RaceWheel{2};
 
+//Teleop variables
 double JoyY;
 double WheelX;
 int currentAutoStep;
@@ -72,11 +74,12 @@ bool isAccelTimeStampSet;
 bool wasInverted;
 
 //Gyro Variables
-float gyroFact;
-float turnFact;
-float lastSumAngle;
+double gyroFact;
+double turnFact;
+double lastSumAngle;
 double correctionAngle;
-bool isGyroReset;
+bool isStartingAngleSet;
+double startingAngle;
 
 //Wheel Diameter: between 6.1 and 6.2 (6.15)
 
@@ -118,6 +121,7 @@ void Robot::RobotInit() {
   //Initialize Gyro
   gyro = new frc::ADXRS450_Gyro();
   gyro->Reset();
+  startingAngle = 0;
   
   //Color Sensor
   m_colorMatcher.AddColorMatch(kBlueTarget);
@@ -151,15 +155,15 @@ void Robot::RobotPeriodic() {
 }
 
 void drivingCorrection(){
-  if (!isGyroReset) {
-    gyro->Reset();
-    isGyroReset = true;
+  if (!isStartingAngleSet) {
+    startingAngle = gyro->GetAngle();
+    isStartingAngleSet = true;
   } else {
     //Correction angle
-    if (gyro->GetRate() > 0) {
-      correctionAngle = gyro->GetAngle()/45;
-    } else if (gyro->GetRate() < 0) {
-      correctionAngle = gyro->GetAngle()/45;
+    if (gyro->GetAngle() > 0) {
+      correctionAngle = (gyro->GetAngle() - startingAngle)/45;
+    } else if (gyro->GetAngle() < 0) {
+      correctionAngle = (gyro->GetAngle() - startingAngle)/45;
     } 
   }
 }
@@ -266,11 +270,6 @@ turnAccel = (frc::Timer::GetFPGATimestamp() - autoTimeStamp) * motorAcceleration
 
 void rotationalAcceleration() {
   /*
-  Robot following semicircle path:
-  1. Keep gyro rate constant by checking rate in current frame and last frame and changing
-  turning accordingly
-  2. figure out what our x and y values are to adapt semicircle function and use it for auto
-
   gyro->GetAngle();
   gyro->GetRate();
 
@@ -456,9 +455,11 @@ void Robot::TeleopPeriodic() {
   //Runs accelerate function during periodic
   accelerate(accelerationRate, JoyY);
 
-  // Runs correction function during periodic
-  drivingCorrection();
-
+  //Sets startingAngle back to false
+  if ((JoyY < 0.05 && JoyY > -0.05) || (WheelX > 0.05 || WheelX < -0.05)) {
+    isStartingAngleSet = false;
+  }
+  
   //Drive Code
   //Button 5 on the wheel activates point turning
   if (RaceWheel.GetRawButton(5)) {
@@ -477,7 +478,10 @@ void Robot::TeleopPeriodic() {
   }
   //Code for driving straight  
   else if (JoyY > 0.05 || JoyY < -0.05) {
-    LeftMotorsSpeed(accelerationSpeed - (fabs(accelerationSpeed) * correctionAngle));                 
+    // Runs correction function during periodic
+    drivingCorrection();
+
+    LeftMotorsSpeed(accelerationSpeed - (fabs(accelerationSpeed)* correctionAngle));                 
     RightMotorsSpeed(accelerationSpeed + (fabs(accelerationSpeed) * correctionAngle));
   } 
   //Code for if nothing is pressed
