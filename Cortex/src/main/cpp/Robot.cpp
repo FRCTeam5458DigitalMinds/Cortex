@@ -302,9 +302,9 @@ turnAccel = (frc::Timer::GetFPGATimestamp() - autoTimeStamp) * motorAcceleration
     else if (fabs(gyro->GetAngle()) >= fabs(degrees) - fabs(someAngle) && fabs(averageMotorSpeed) > 0) {
       if (gyro->GetAngle() < degrees) {
         LeftMotorsSpeed(maxSpeed - (frc::Timer::GetFPGATimestamp() - turnTimeStamp) * percentPerSecond);
-        RightMotorsSpeed(-(maxSpeed - (frc::Timer::GetFPGATimestamp()- turnTimeStamp) * percentPerSecond));
+        RightMotorsSpeed(-(maxSpeed - (frc::Timer::GetFPGATimestamp() - turnTimeStamp) * percentPerSecond));
       } else if (gyro->GetAngle() < degrees) {
-        LeftMotorsSpeed(-(maxSpeed - (frc::Timer::GetFPGATimestamp() - turnTimeStamp) * percentPerSecond));
+        LeftMotorsSpeed(-(maxSpeed - (frc::Timer::GetFPGATimestamp(   ) - turnTimeStamp) * percentPerSecond));
         RightMotorsSpeed(maxSpeed - (frc::Timer::GetFPGATimestamp()- turnTimeStamp) * percentPerSecond);
       }
     } else {
@@ -381,7 +381,6 @@ void Robot::AutonomousPeriodic() {
 
     switch (currentAutoStep){
       case 1:
-      drivingCorrection();
       goDistance(24, 0.2);
       break;
 
@@ -390,7 +389,6 @@ void Robot::AutonomousPeriodic() {
       break;
 
       case 3:
-      drivingCorrection();
       goDistance(24, 0.2);
       break;
 
@@ -418,6 +416,7 @@ void Robot::TeleopInit() {
   changeInY = 0;
   accelStartSpeed = 0;
   deltaSpeed = 0;
+  accelerationRate = 0.5;
   gyro->Reset();
 }
 
@@ -511,7 +510,7 @@ void Robot::TeleopPeriodic() {
   
   //Drive Code
   //Button 5 on the wheel activates point turning
-  if (RaceWheel.GetRawButton(5)) {
+  if (RaceWheel.GetRawButton(7)) {
     if (WheelX > 0) {
       LeftMotorsSpeed(WheelX * WheelX);
       RightMotorsSpeed(-(WheelX * WheelX));
