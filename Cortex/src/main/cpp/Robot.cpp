@@ -146,6 +146,8 @@ void Robot::RobotPeriodic() {
   frc::SmartDashboard::PutNumber("Gyro Rate", gyro->GetRate());
   frc::SmartDashboard::PutNumber("Correction Angle", correctionAngle);
   frc::SmartDashboard::PutNumber("Some Angle", someAngle);
+  frc::SmartDashboard::PutNumber("Left Motor Output", LeftMotorOne.GetMotorOutputPercent());
+  frc::SmartDashboard::PutNumber("Right Motor Output", RightMotorOne.GetMotorOutputPercent());
   /*
   //Now that we're using drivingCorrection() function during teleop and auto, we shouldn't need this
   //Correction angle
