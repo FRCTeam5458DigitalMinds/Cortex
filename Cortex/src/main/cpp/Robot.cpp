@@ -212,7 +212,6 @@ void Robot::AutonomousInit() {
 
 //Autonomous Functions
 void goDistance(double inches, double speed) {
-  drivingCorrection();
   double encoderUnits = inches * 4000/12;
   double averageEncoderValue = (-(LeftMotorOne.GetSelectedSensorPosition()) + RightMotorOne.GetSelectedSensorPosition())/2;
   //double distanceLeft = encoderUnits - ((LeftMotorOne.GetSelectedSensorPosition() + RightMotorOne.GetSelectedSensorPosition()) / 2)
@@ -302,7 +301,7 @@ turnAccel = (frc::Timer::GetFPGATimestamp() - autoTimeStamp) * motorAcceleration
       } 
       turnTimeStamp = frc::Timer::GetFPGATimestamp();
     }
-    else if (fabs(gyro->GetAngle()) > fabs(degrees) - fabs(someAngle) && fabs(averageMotorSpeed) > 0 && fabs(gyro->GetAngle()) < degrees) {
+    else if (fabs(gyro->GetAngle()) > fabs(degrees) - fabs(someAngle) && fabs(averageMotorSpeed) > 0 && fabs(gyro->GetAngle()) <= degrees) {
       if (gyro->GetAngle() < degrees) {
         LeftMotorsSpeed(maxSpeed - (frc::Timer::GetFPGATimestamp() - turnTimeStamp) * percentPerSecond);
         RightMotorsSpeed(-(maxSpeed - (frc::Timer::GetFPGATimestamp() - turnTimeStamp) * percentPerSecond));
@@ -384,6 +383,7 @@ void Robot::AutonomousPeriodic() {
 
     switch (currentAutoStep){
       case 1:
+      drivingCorrection();
       goDistance(24, 0.2);
       break;
 
@@ -392,6 +392,7 @@ void Robot::AutonomousPeriodic() {
       break;
 
       case 3:
+      drivingCorrection();
       goDistance(24, 0.2);
       break;
 
