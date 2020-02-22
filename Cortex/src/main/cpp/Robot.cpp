@@ -58,6 +58,7 @@ double accelerationRate = 0.5;
 
 //Auto Variables
 bool isTurnTimeStampSet;
+double turnTimeStamp;
 double autoTimeStamp;
 double turnSpeed;
 double turnAccel;
@@ -80,6 +81,7 @@ double lastSumAngle;
 double correctionAngle;
 bool isStartingAngleSet;
 double startingAngle;
+double someAngle;
 
 //Wheel Diameter: between 6.1 and 6.2 (6.15)
 
@@ -194,6 +196,7 @@ void Robot::AutonomousInit() {
     currentAutoStep = 1;
     isDelayTimeStampSet = false;
     delayTimeStamp = 0;
+    someAngle = 0;
     LeftMotorOne.SetSelectedSensorPosition(0);
     RightMotorOne.SetSelectedSensorPosition(0);
     gyro->Reset();
@@ -227,8 +230,16 @@ void goDistance(double inches, double speed) {
   }
 }
 
-void turn(double degrees, double speed){
-  /*double encoderUnits = (degrees * 26000)/360;
+void turn(double degrees, double maxSpeed, double percentPerSecond){
+  /*
+  Brainstorming:
+  Accelerate in degrees per second rather than percent per second.
+  Use gyro->GetRate() to know if we have reached the maximum speed we want to go
+  Increase rate until gyro->GetRate() equals a certain value
+  
+  
+  
+  double encoderUnits = (degrees * 26000)/360;
   double averageEncoderValue = (LeftMotorOne.GetSelectedSensorPosition() + RightMotorOne.GetSelectedSensorPosition())/2;
   if (averageEncoderValue > -encoderUnits && encoderUnits > 0) {
     LeftMotorsSpeed(speed);
@@ -262,16 +273,48 @@ turnAccel = (frc::Timer::GetFPGATimestamp() - autoTimeStamp) * motorAcceleration
    currentAutoStep = currentAutoStep + 1;
  }
 */
- if (gyro->GetAngle() < degrees - 30 && degrees > 0) {
-   LeftMotorsSpeed(speed);
-   RightMotorsSpeed(-speed);
- }
- else if (gyro->GetAngle() > degrees + 30 && degrees < 0) {
-   LeftMotorsSpeed(-speed);
-   RightMotorsSpeed(speed);
- } else {
-   currentAutoStep = currentAutoStep + 1;
- }
+
+  double averageMotorSpeed = (LeftMotorOne.GetMotorOutputPercent() + RightMotorOne.GetMotorOutputPercent())/2;
+  if (!isTurnTimeStampSet){
+    turnTimeStamp = frc::Timer::GetFPGATimestamp();
+    isTurnTimeStampSet = true;
+  } else {
+    if (fabs(averageMotorSpeed) < maxSpeed && fabs(gyro->GetAngle()) < fabs(degrees/2)) {
+      if (gyro->GetAngle() < degrees){
+        LeftMotorsSpeed((frc::Timer::GetFPGATimestamp() - turnTimeStamp) * percentPerSecond);
+        RightMotorsSpeed(-(frc::Timer::GetFPGATimestamp() - turnTimeStamp) * percentPerSecond); 
+      } else if (gyro->GetAngle() > degrees) {
+        LeftMotorsSpeed((frc::Timer::GetFPGATimestamp() - turnTimeStamp) * percentPerSecond);
+        RightMotorsSpeed(-(frc::Timer::GetFPGATimestamp() - turnTimeStamp) * percentPerSecond);
+      }
+    } else if (someAngle == 0) {
+      someAngle = gyro->GetAngle();
+    } else if (fabs(gyro->GetAngle()) < fabs(degrees) - fabs(someAngle)) {
+      if (gyro->GetAngle() < degrees){
+        LeftMotorsSpeed(maxSpeed);
+        RightMotorsSpeed(-maxSpeed);
+      } else if (gyro->GetAngle() > degrees){
+        LeftMotorsSpeed(-maxSpeed);
+        RightMotorsSpeed(maxSpeed);
+      } 
+      turnTimeStamp = frc::Timer::GetFPGATimestamp();
+    }
+    else if (fabs(gyro->GetAngle()) >= fabs(degrees) - fabs(someAngle) && fabs(averageMotorSpeed) > 0) {
+      if (gyro->GetAngle() < degrees) {
+        LeftMotorsSpeed(maxSpeed - (frc::Timer::GetFPGATimestamp() - turnTimeStamp) * percentPerSecond);
+        RightMotorsSpeed(-(maxSpeed - (frc::Timer::GetFPGATimestamp()- turnTimeStamp) * percentPerSecond));
+      } else if (gyro->GetAngle() < degrees) {
+        LeftMotorsSpeed(-(maxSpeed - (frc::Timer::GetFPGATimestamp() - turnTimeStamp) * percentPerSecond));
+        RightMotorsSpeed(maxSpeed - (frc::Timer::GetFPGATimestamp()- turnTimeStamp) * percentPerSecond);
+      }
+    } else {
+      LeftMotorsSpeed(0);
+      RightMotorsSpeed(0);
+      someAngle = 0;
+      isTurnTimeStampSet = false;
+      currentAutoStep = currentAutoStep + 1;
+    }
+  }
 }
 
 void rotationalAcceleration() {
@@ -356,7 +399,7 @@ void Robot::AutonomousPeriodic() {
       break;
 
       case 5:
-      turn(180, 0.2);
+      turn(180, 0.2, 0.1);
       break;
 
       default:
