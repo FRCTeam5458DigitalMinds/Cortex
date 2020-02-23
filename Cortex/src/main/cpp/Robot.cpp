@@ -158,6 +158,7 @@ void Robot::RobotPeriodic() {
   frc::SmartDashboard::PutNumber("Left Motor Output", LeftMotorOne.GetMotorOutputPercent());
   frc::SmartDashboard::PutNumber("Right Motor Output", RightMotorOne.GetMotorOutputPercent());
   frc::SmartDashboard::PutNumber("Turn Step", turnStep);
+  frc::SmartDashboard::PutNumber("Highest Turn Speed", highestTurnSpeed);
   /*
   //Now that we're using drivingCorrection() function during teleop and auto, we shouldn't need this
   //Correction angle
@@ -370,11 +371,11 @@ turnAccel = (frc::Timer::GetFPGATimestamp() - autoTimeStamp) * motorAcceleration
 
     case 4:
     if (gyro->GetAngle() < degrees) {
-      LeftMotorsSpeed(highestTurnSpeed * ((fabs(degrees) - (gyro->GetAngle()) / fabs(someAngle))));
-      RightMotorsSpeed(-(highestTurnSpeed * ((fabs(degrees) - (gyro->GetAngle()) / fabs(someAngle)))));
+      LeftMotorsSpeed(highestTurnSpeed * ((fabs(degrees) - fabs(gyro->GetAngle()) / fabs(someAngle))));
+      RightMotorsSpeed(-(highestTurnSpeed * ((fabs(degrees) - fabs(gyro->GetAngle()) / fabs(someAngle)))));
     } else if (gyro->GetAngle() > degrees) {
-      LeftMotorsSpeed(-(highestTurnSpeed * ((fabs(degrees) - (gyro->GetAngle()) / fabs(someAngle)))));
-      RightMotorsSpeed(highestTurnSpeed * ((fabs(degrees) - (gyro->GetAngle()) / fabs(someAngle))));
+      LeftMotorsSpeed(-(highestTurnSpeed * ((fabs(degrees) - fabs(gyro->GetAngle()) / fabs(someAngle)))));
+      RightMotorsSpeed(highestTurnSpeed * ((fabs(degrees) - fabs(gyro->GetAngle()) / fabs(someAngle))));
     }   
     if (fabs(gyro->GetAngle()) >= fabs(degrees)){
       turnStep += 1;
