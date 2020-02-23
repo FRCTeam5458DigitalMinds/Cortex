@@ -69,6 +69,7 @@ double turnTimeStamp;
 double autoTimeStamp;
 double turnSpeed;
 int turnStep;
+double highestTurnSpeed;
 double turnAccel;
 double motorAccelerationSpeed;
 double amountToAccelerate;
@@ -205,6 +206,7 @@ void Robot::AutonomousInit() {
     isDelayTimeStampSet = false;
     delayTimeStamp = 0;
     someAngle = 0;
+    highestTurnSpeed = 0;
     turnStep = 1;
     LeftMotorOne.SetSelectedSensorPosition(0);
     RightMotorOne.SetSelectedSensorPosition(0);
@@ -343,6 +345,10 @@ turnAccel = (frc::Timer::GetFPGATimestamp() - autoTimeStamp) * motorAcceleration
       RightMotorsSpeed(-(frc::Timer::GetFPGATimestamp() - turnTimeStamp) * percentPerSecond);
     }
     if (fabs(averageMotorSpeed) >= maxSpeed || fabs(gyro->GetAngle()) > fabs(degrees/2)) {
+      highestTurnSpeed = fabs(averageMotorSpeed);
+      if (highestTurnSpeed > maxSpeed){
+        highestTurnSpeed = maxSpeed;
+      }
       someAngle = gyro->GetAngle();
       turnStep += 1;
     }
@@ -364,11 +370,11 @@ turnAccel = (frc::Timer::GetFPGATimestamp() - autoTimeStamp) * motorAcceleration
 
     case 4:
     if (gyro->GetAngle() < degrees) {
-      LeftMotorsSpeed(maxSpeed * ((fabs(degrees) - (gyro->GetAngle()) / fabs(someAngle))));
-      RightMotorsSpeed(-(maxSpeed * ((fabs(degrees) - (gyro->GetAngle()) / fabs(someAngle)))));
+      LeftMotorsSpeed(highestTurnSpeed * ((fabs(degrees) - (gyro->GetAngle()) / fabs(someAngle))));
+      RightMotorsSpeed(-(highestTurnSpeed * ((fabs(degrees) - (gyro->GetAngle()) / fabs(someAngle)))));
     } else if (gyro->GetAngle() > degrees) {
-      LeftMotorsSpeed(-(maxSpeed * ((fabs(degrees) - (gyro->GetAngle()) / fabs(someAngle)))));
-      RightMotorsSpeed(maxSpeed * ((fabs(degrees) - (gyro->GetAngle()) / fabs(someAngle))));
+      LeftMotorsSpeed(-(highestTurnSpeed * ((fabs(degrees) - (gyro->GetAngle()) / fabs(someAngle)))));
+      RightMotorsSpeed(highestTurnSpeed * ((fabs(degrees) - (gyro->GetAngle()) / fabs(someAngle))));
     }   
     if (fabs(gyro->GetAngle()) >= fabs(degrees)){
       turnStep += 1;
