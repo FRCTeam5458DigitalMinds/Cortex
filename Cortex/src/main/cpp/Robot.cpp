@@ -156,6 +156,7 @@ void Robot::RobotPeriodic() {
   frc::SmartDashboard::PutNumber("Some Angle", someAngle);
   frc::SmartDashboard::PutNumber("Left Motor Output", LeftMotorOne.GetMotorOutputPercent());
   frc::SmartDashboard::PutNumber("Right Motor Output", RightMotorOne.GetMotorOutputPercent());
+  frc::SmartDashboard::PutNumber("Turn Step", turnStep);
   /*
   //Now that we're using drivingCorrection() function during teleop and auto, we shouldn't need this
   //Correction angle
@@ -455,7 +456,7 @@ void Robot::AutonomousPeriodic() {
 
     switch (currentAutoStep){
       case 1:
-      goDistance(24, 0.2);
+      turn(180, 0.2, 0.1);
       break;
       
       case 2:
