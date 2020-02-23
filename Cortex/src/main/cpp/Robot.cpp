@@ -174,12 +174,8 @@ void drivingCorrection(){
     isStartingAngleSet = true;
   } else {
     //Correction angle
-    if (gyro->GetAngle() > 0) {
-      correctionAngle = (gyro->GetAngle() - startingAngle)/45;
-    } else if (gyro->GetAngle() < 0) {
-      correctionAngle = (gyro->GetAngle() - startingAngle)/45;
-    } 
-  }
+    correctionAngle = (gyro->GetAngle() - startingAngle)/45;
+  } 
 }
 
 /**
@@ -376,13 +372,22 @@ turnAccel = (frc::Timer::GetFPGATimestamp() - autoTimeStamp) * motorAcceleration
     }   
     if (fabs(gyro->GetAngle()) >= fabs(degrees)){
       turnStep += 1;
+      turnTimeStamp = frc::Timer::GetFPGATimestamp();
     }
     break;
 
     case 5:
+    LeftMotorsSpeed(-(maxSpeed * (gyro->GetAngle() - degrees)/45));
+    RightMotorsSpeed(maxSpeed * (gyro->GetAngle() - degrees)/45);
+    if (frc::Timer::GetFPGATimestamp() - turnTimeStamp > 3){
+      turnStep += 1;
+    }
+    break;
+
+    case 6:
     LeftMotorsSpeed(0);
     RightMotorsSpeed(0);
-    currentAutoStep = currentAutoStep + 1;
+    currentAutoStep += 1;
     turnStep = 1;
     break;
 
