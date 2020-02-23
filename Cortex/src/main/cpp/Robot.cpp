@@ -208,6 +208,7 @@ void Robot::AutonomousInit() {
     isDelayTimeStampSet = false;
     delayTimeStamp = 0;
     someAngle = 0;
+    turnStep = 1;
     LeftMotorOne.SetSelectedSensorPosition(0);
     RightMotorOne.SetSelectedSensorPosition(0);
     gyro->Reset();
@@ -381,6 +382,7 @@ turnAccel = (frc::Timer::GetFPGATimestamp() - autoTimeStamp) * motorAcceleration
     LeftMotorsSpeed(0);
     RightMotorsSpeed(0);
     currentAutoStep = currentAutoStep + 1;
+    turnStep = 1;
     break;
 
     default:
