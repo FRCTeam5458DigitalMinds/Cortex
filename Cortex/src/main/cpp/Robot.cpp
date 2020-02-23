@@ -331,6 +331,7 @@ turnAccel = (frc::Timer::GetFPGATimestamp() - autoTimeStamp) * motorAcceleration
 */
   switch (turnStep){
     case 1:
+    gyro->Reset();
     turnTimeStamp = frc::Timer::GetFPGATimestamp();
     turnStep += 1;
     break;
@@ -452,25 +453,11 @@ void Robot::AutonomousPeriodic() {
 
     switch (currentAutoStep){
       case 1:
-      drivingCorrection();
-      goDistance(24, 0.2);
+      turn(180, 0.2, 0.1);
       break;
 
       case 2:
-      delay(3);         
-      break;
-
-      case 3:
-      drivingCorrection();
-      goDistance(24, 0.2);
-      break;
-
-      case 4:
-      delay(3);
-      break;
-
-      case 5:
-      turn(180, 0.2, 0.1);
+      stopAll();
       break;
 
       default:
