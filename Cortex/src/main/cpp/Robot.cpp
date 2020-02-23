@@ -370,7 +370,7 @@ turnAccel = (frc::Timer::GetFPGATimestamp() - autoTimeStamp) * motorAcceleration
       LeftMotorsSpeed(-(maxSpeed - (frc::Timer::GetFPGATimestamp() - turnTimeStamp) * percentPerSecond));
       RightMotorsSpeed(maxSpeed - (frc::Timer::GetFPGATimestamp()- turnTimeStamp) * percentPerSecond);
     }   
-    if (fabs(degrees) - fabs(gyro->GetAngle()) >= 5){
+    if (fabs(gyro->GetAngle()) >= fabs(degrees)){
       turnStep += 1;
       turnTimeStamp = frc::Timer::GetFPGATimestamp();
     }
