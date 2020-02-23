@@ -16,6 +16,7 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/Joystick.h>
 #include <frc/ADXRS450_Gyro.h>
+#include <frc/Solenoid.h>
 //Color Sensor
 #include <frc/util/color.h>
 #include <rev/ColorSensorV3.h>
@@ -46,6 +47,13 @@ frc::ADXRS450_Gyro *gyro;
 
 //Joysticks
 frc::Joystick JoyAccel1{0}, Xbox{1}, RaceWheel{2};
+
+//Solenoids
+frc::Solenoid solenoid0{0};
+frc::Solenoid solenoid1{1};
+frc::Solenoid solenoid2{2};
+frc::Solenoid solenoid3{3};
+frc::Solenoid solenoid4{4};
 
 //Teleop variables
 double JoyY;
@@ -301,7 +309,7 @@ turnAccel = (frc::Timer::GetFPGATimestamp() - autoTimeStamp) * motorAcceleration
       } 
       turnTimeStamp = frc::Timer::GetFPGATimestamp();
     }
-    else if (fabs(gyro->GetAngle()) > fabs(degrees) - fabs(someAngle) && fabs(averageMotorSpeed) > 0 && fabs(gyro->GetAngle()) <= degrees) {
+    else if (fabs(gyro->GetAngle()) > fabs(degrees) - fabs(someAngle) && fabs(averageMotorSpeed) > 0 && fabs(gyro->GetAngle()) < degrees) {
       if (gyro->GetAngle() < degrees) {
         LeftMotorsSpeed(maxSpeed - (frc::Timer::GetFPGATimestamp() - turnTimeStamp) * percentPerSecond);
         RightMotorsSpeed(-(maxSpeed - (frc::Timer::GetFPGATimestamp() - turnTimeStamp) * percentPerSecond));
