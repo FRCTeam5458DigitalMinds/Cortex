@@ -345,13 +345,14 @@ turnAccel = (frc::Timer::GetFPGATimestamp() - autoTimeStamp) * motorAcceleration
       LeftMotorsSpeed((frc::Timer::GetFPGATimestamp() - turnTimeStamp) * percentPerSecond);
       RightMotorsSpeed(-(frc::Timer::GetFPGATimestamp() - turnTimeStamp) * percentPerSecond);
     }
-    if (fabs(averageMotorSpeed) >= maxSpeed || fabs(gyro->GetAngle()) > fabs(degrees/2)) {
-      highestTurnSpeed = fabs(averageMotorSpeed);
-      if (highestTurnSpeed > maxSpeed){
-        highestTurnSpeed = maxSpeed;
-      }
+    if (fabs(averageMotorSpeed) >= maxSpeed) {
+      highestTurnSpeed = maxSpeed;
       someAngle = gyro->GetAngle();
       turnStep += 1;
+    } else if (fabs(gyro->GetAngle()) > fabs(degrees/2)){
+      highestTurnSpeed = fabs(averageMotorSpeed);
+      someAngle = gyro->GetAngle();
+      turnStep += 2;
     }
     break;
 
@@ -364,7 +365,6 @@ turnAccel = (frc::Timer::GetFPGATimestamp() - autoTimeStamp) * motorAcceleration
       RightMotorsSpeed(highestTurnSpeed);
     }
     if ((fabs(gyro->GetAngle()) > fabs(degrees) - fabs(someAngle))) {
-      turnTimeStamp = frc::Timer::GetFPGATimestamp();
       turnStep += 1;
     }
     break;
@@ -379,20 +379,10 @@ turnAccel = (frc::Timer::GetFPGATimestamp() - autoTimeStamp) * motorAcceleration
     }   
     if (fabs(gyro->GetAngle()) >= fabs(degrees)){
       turnStep += 1;
-      //turnTimeStamp = frc::Timer::GetFPGATimestamp();
     }
     break;
-
-    case 5:
-    //LeftMotorsSpeed(-(percentPerSecond* (gyro->GetAngle() - degrees)/15));
-    //RightMotorsSpeed(percentPerSecond * (gyro->GetAngle() - degrees)/15);
-    /*if (frc::Timer::GetFPGATimestamp() - turnTimeStamp > 3) {
-      turnStep += 1;
-    }*/
-    turnStep += 1;
-    break;
     
-    case 6:
+    case 5:
     LeftMotorsSpeed(0);
     RightMotorsSpeed(0);
     currentAutoStep += 1;
