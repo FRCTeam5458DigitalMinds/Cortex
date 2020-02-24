@@ -393,7 +393,7 @@ turnAccel = (frc::Timer::GetFPGATimestamp() - autoTimeStamp) * motorAcceleration
     LeftMotorsSpeed(0);
     RightMotorsSpeed(0);
   }
-
+  frc::SmartDashboard::PutNumber("Degrees", degrees);
   frc::SmartDashboard::PutNumber("Deceleration Rate", ((fabs(degrees) - fabs(gyro->GetAngle()) / fabs(someAngle))));
 }
 
