@@ -159,7 +159,6 @@ void Robot::RobotPeriodic() {
   frc::SmartDashboard::PutNumber("Right Motor Output", RightMotorOne.GetMotorOutputPercent());
   frc::SmartDashboard::PutNumber("Turn Step", turnStep);
   frc::SmartDashboard::PutNumber("Highest Turn Speed", highestTurnSpeed);
-  frc::SmartDashboard::PutNumber("Deceleration Rate", ((fabs(degrees) - fabs(gyro->GetAngle()) / fabs(someAngle))));
   /*
   //Now that we're using drivingCorrection() function during teleop and auto, we shouldn't need this
   //Correction angle
@@ -404,6 +403,8 @@ turnAccel = (frc::Timer::GetFPGATimestamp() - autoTimeStamp) * motorAcceleration
     LeftMotorsSpeed(0);
     RightMotorsSpeed(0);
   }
+
+  frc::SmartDashboard::PutNumber("Deceleration Rate", ((fabs(degrees) - fabs(gyro->GetAngle()) / fabs(someAngle))));
 }
 
 void rotationalAcceleration() {
