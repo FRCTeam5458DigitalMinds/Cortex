@@ -541,7 +541,7 @@ void Robot::AutonomousPeriodic() {
 
     switch (currentAutoStep){
       case 1:
-      turn(180, 0.2, 0.1);
+      goDistance(60, 0.1, 0.2);
       break;
       
       case 2:
@@ -549,7 +549,7 @@ void Robot::AutonomousPeriodic() {
       break;
 
       case 3:
-      turn(180, 0.2, 0.1);
+      goDistance(60, 0.1, 0.2);
       break;
       
       case 4:
