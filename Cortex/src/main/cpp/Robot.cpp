@@ -65,16 +65,24 @@ double delayTimeStamp;
 double accelerationRate = 0.5;
 
 //Auto Variables
+//Turning
 double turnTimeStamp;
 double autoTimeStamp;
 double turnSpeed;
 int turnStep;
 double highestTurnSpeed;
 double turnAccel;
+//Distance
+int distanceStep; //Current step of the goDistance function
+double distanceTimeStamp; //Used to keep track of how many seconds have passed since a certain point
+double someDistance; // The distance the bot reached when it went half the encoder units
+double someSpeed; //The speed the bot was traveling when it started to slow down
+//Other
+double averageMotorSpeed;
 double motorAccelerationSpeed;
 double amountToAccelerate;
 
-//Acceleration Variables
+//Acceleration Variables (Teleop)
 double accelerationSpeed;
 double accelTimeStamp;
 double changeInY;
@@ -159,6 +167,7 @@ void Robot::RobotPeriodic() {
   frc::SmartDashboard::PutNumber("Right Motor Output", RightMotorOne.GetMotorOutputPercent());
   frc::SmartDashboard::PutNumber("Turn Step", turnStep);
   frc::SmartDashboard::PutNumber("Highest Turn Speed", highestTurnSpeed);
+  frc::SmartDashboard::PutNumber("Distance Step", distanceStep);
   /*
   //Now that we're using drivingCorrection() function during teleop and auto, we shouldn't need this
   //Correction angle
@@ -220,7 +229,12 @@ void Robot::AutonomousInit() {
 }
 
 //Autonomous Functions
-void goDistance(double inches, double speed) {
+void goDistance(double inches, double accelerationRate, double maxSpeed) {
+
+  averageMotorSpeed = (-(LeftMotorOne.GetMotorOutputPercent()) + RightMotorOne.GetMotorOutputPercent())/2;
+  double averageEncoderValue = (-(LeftMotorOne.GetSelectedSensorPosition()) + RightMotorOne.GetSelectedSensorPosition())/2;
+
+  /*
   double encoderUnits = inches * 4000/12;
   double averageEncoderValue = (-(LeftMotorOne.GetSelectedSensorPosition()) + RightMotorOne.GetSelectedSensorPosition())/2;
   //double distanceLeft = encoderUnits - ((LeftMotorOne.GetSelectedSensorPosition() + RightMotorOne.GetSelectedSensorPosition()) / 2)
@@ -238,12 +252,78 @@ void goDistance(double inches, double speed) {
     LeftMotorOne.SetSelectedSensorPosition(0);
     RightMotorOne.SetSelectedSensorPosition(0);
     currentAutoStep = currentAutoStep + 1;
+  } */
+  
+  double encoderUnits = inches * 4000/12;
+  switch (distanceStep) {
+    case 1:
+    LeftMotorOne.SetSelectedSensorPosition(0);
+    RightMotorOne.SetSelectedSensorPosition(0);
+    distanceTimeStamp = frc::Timer::GetFPGATimestamp();
+    distanceStep += 1;
+    break;
+
+    case 2:
+    if (encoderUnits > 0){
+      LeftMotorsSpeed((frc::Timer::GetFPGATimestamp() - distanceTimeStamp) * accelerationRate);
+      RightMotorsSpeed((frc::Timer::GetFPGATimestamp() - distanceTimeStamp) * accelerationRate);
+    } else if (encoderUnits < 0){
+      LeftMotorsSpeed(-((frc::Timer::GetFPGATimestamp() - distanceTimeStamp) * accelerationRate));
+      RightMotorsSpeed(-((frc::Timer::GetFPGATimestamp() - distanceTimeStamp) * accelerationRate));
+    }
+    if (fabs(averageMotorSpeed) >= maxSpeed) {
+      someDistance = averageEncoderValue;
+      distanceStep += 1;
+    } else if (fabs(averageEncoderValue) > fabs(encoderUnits)/2) {
+      someSpeed = averageMotorSpeed;
+      distanceStep += 2;
+    }
+    break;
+
+    case 3:
+    if (encoderUnits > 0){
+      LeftMotorsSpeed(maxSpeed);
+      RightMotorsSpeed(maxSpeed);
+    } else if (encoderUnits < 0){
+      LeftMotorsSpeed(-maxSpeed);
+      RightMotorsSpeed(-maxSpeed);
+    }
+    if (fabs(averageEncoderValue) > fabs(encoderUnits) - fabs(someDistance)) {
+      someSpeed = averageMotorSpeed;
+      distanceTimeStamp = frc::Timer::GetFPGATimestamp();
+      distanceStep += 1;
+    }
+    break;
+
+    case 4:
+    if (encoderUnits > 0) {
+      LeftMotorsSpeed(someSpeed - (frc::Timer::GetFPGATimestamp() - distanceTimeStamp) * accelerationRate);
+      RightMotorsSpeed(someSpeed - (frc::Timer::GetFPGATimestamp() - distanceTimeStamp) * accelerationRate);
+    } else if (encoderUnits < 0) {
+      LeftMotorsSpeed(someSpeed + (frc::Timer::GetFPGATimestamp() - distanceTimeStamp) * accelerationRate);
+      RightMotorsSpeed(someSpeed + (frc::Timer::GetFPGATimestamp() - distanceTimeStamp) * accelerationRate);
+    }
+    if (averageEncoderValue >= encoderUnits || averageMotorSpeed == 0) {
+      distanceStep += 1;
+    }
+    break;
+
+    case 5:
+    LeftMotorsSpeed(0);
+    RightMotorsSpeed(0);
+    currentAutoStep += 1;
+    distanceStep = 1;
+    break;
+
+    default:
+    LeftMotorsSpeed(0);
+    RightMotorsSpeed(0);
   }
 }
 
 void turn(double degrees, double maxSpeed, double percentPerSecond){
   
-  double averageMotorSpeed = (LeftMotorOne.GetMotorOutputPercent() + RightMotorOne.GetMotorOutputPercent())/2;
+  averageMotorSpeed = (LeftMotorOne.GetMotorOutputPercent() + RightMotorOne.GetMotorOutputPercent())/2;
 
   /*
   Brainstorming:
@@ -497,7 +577,8 @@ void Robot::TeleopInit() {
 
 //Teleop Functions
 void accelerate(double percentPerSecond, double yInput){
-  double averageMotorSpeed = (-(LeftMotorOne.GetMotorOutputPercent()) + RightMotorOne.GetMotorOutputPercent())/2;
+  averageMotorSpeed = (-(LeftMotorOne.GetMotorOutputPercent()) + RightMotorOne.GetMotorOutputPercent())/2;
+
   if (!isAccelTimeStampSet || ((changeInY > 0 && yInput - averageMotorSpeed < 0) || (changeInY < 0 && yInput - averageMotorSpeed > 0))) {
     isAccelTimeStampSet = true;
     accelTimeStamp = frc::Timer::GetFPGATimestamp();
