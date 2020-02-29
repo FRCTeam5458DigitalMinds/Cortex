@@ -561,7 +561,7 @@ void Robot::AutonomousPeriodic() {
       break;
 
       case 3:
-      goDistance(60, 0.1, 0.2);
+      goDistance(-60, 0.1, 0.2);
       break;
       
       case 4:
