@@ -172,6 +172,7 @@ void Robot::RobotPeriodic() {
   //frc::SmartDashboard::PutNumber("Right Motor Output", RightMotorOne.GetMotorOutputPercent());
   frc::SmartDashboard::PutNumber("Turn Step", turnStep);
   frc::SmartDashboard::PutNumber("Highest Turn Speed", highestTurnSpeed);
+  frc::SmartDashboard::PutNumber("CurrentAutoStep", currentAutoStep);
   //frc::SmartDashboard::PutNumber("Distance Step", distanceStep);
   //frc::SmartDashboard::PutNumber("Average Encoder Value", averageEncoderValue);
   //frc::SmartDashboard::PutNumber("Some Distance", someDistance);
