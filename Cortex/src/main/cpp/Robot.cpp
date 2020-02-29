@@ -264,6 +264,8 @@ void goDistance(double inches, double percentPerSecond, double maxSpeed) {
 
   frc::SmartDashboard::PutNumber("encoderUnits", encoderUnits);
 
+  drivingCorrection();
+  
   switch (distanceStep) {
     case 1:
     LeftMotorOne.SetSelectedSensorPosition(0);
@@ -322,6 +324,7 @@ void goDistance(double inches, double percentPerSecond, double maxSpeed) {
     case 5:
     LeftMotorsSpeed(0);
     RightMotorsSpeed(0);
+    isStartingAngleSet = false;
     currentAutoStep += 1;
     distanceStep = 1;
     break;
