@@ -261,11 +261,12 @@ void goDistance(double inches, double percentPerSecond, double maxSpeed) {
   } */
   
   double encoderUnits = inches * 6000/12;
+  double accelSpeed = (frc::Timer::GetFPGATimestamp() - distanceTimeStamp) * percentPerSecond;
 
   frc::SmartDashboard::PutNumber("encoderUnits", encoderUnits);
 
   drivingCorrection();
-  
+
   switch (distanceStep) {
     case 1:
     LeftMotorOne.SetSelectedSensorPosition(0);
@@ -276,11 +277,11 @@ void goDistance(double inches, double percentPerSecond, double maxSpeed) {
 
     case 2:
     if (encoderUnits > 0){
-      LeftMotorsSpeed((frc::Timer::GetFPGATimestamp() - distanceTimeStamp) * percentPerSecond);
-      RightMotorsSpeed((frc::Timer::GetFPGATimestamp() - distanceTimeStamp) * percentPerSecond);
+      LeftMotorsSpeed(accelSpeed - (fabs(accelSpeed) * correctionAngle));
+      RightMotorsSpeed(accelSpeed + (fabs(accelSpeed) * correctionAngle));
     } else if (encoderUnits < 0){
-      LeftMotorsSpeed(-((frc::Timer::GetFPGATimestamp() - distanceTimeStamp) * percentPerSecond));
-      RightMotorsSpeed(-((frc::Timer::GetFPGATimestamp() - distanceTimeStamp) * percentPerSecond));
+      LeftMotorsSpeed(-accelSpeed - (fabs(accelSpeed) * correctionAngle));
+      RightMotorsSpeed(-accelSpeed + (fabs(accelSpeed) * correctionAngle));
     }
     if (fabs(averageMotorSpeed) >= maxSpeed) {
       someDistance = averageEncoderValue;
@@ -295,11 +296,11 @@ void goDistance(double inches, double percentPerSecond, double maxSpeed) {
 
     case 3:
     if (encoderUnits > 0){
-      LeftMotorsSpeed(maxSpeed);
-      RightMotorsSpeed(maxSpeed);
+      LeftMotorsSpeed(maxSpeed - (fabs(maxSpeed) * correctionAngle));
+      RightMotorsSpeed(maxSpeed + (fabs(maxSpeed) * correctionAngle));
     } else if (encoderUnits < 0){
-      LeftMotorsSpeed(-maxSpeed);
-      RightMotorsSpeed(-maxSpeed);
+      LeftMotorsSpeed(-maxSpeed + (fabs(maxSpeed) * correctionAngle));
+      RightMotorsSpeed(-maxSpeed - (fabs(maxSpeed) * correctionAngle));
     }
     if (fabs(averageEncoderValue) > fabs(encoderUnits) - fabs(someDistance)) {
       someSpeed = averageMotorSpeed;
@@ -310,11 +311,11 @@ void goDistance(double inches, double percentPerSecond, double maxSpeed) {
 
     case 4:
     if (encoderUnits > 0) {
-      LeftMotorsSpeed(someSpeed - (frc::Timer::GetFPGATimestamp() - distanceTimeStamp) * percentPerSecond);
-      RightMotorsSpeed(someSpeed - (frc::Timer::GetFPGATimestamp() - distanceTimeStamp) * percentPerSecond);
+      LeftMotorsSpeed((someSpeed - accelSpeed) - (fabs(someSpeed - accelSpeed) * correctionAngle));
+      RightMotorsSpeed((someSpeed - accelSpeed) + (fabs(someSpeed - accelSpeed) * correctionAngle));
     } else if (encoderUnits < 0) {
-      LeftMotorsSpeed(someSpeed + (frc::Timer::GetFPGATimestamp() - distanceTimeStamp) * percentPerSecond);
-      RightMotorsSpeed(someSpeed + (frc::Timer::GetFPGATimestamp() - distanceTimeStamp) * percentPerSecond);
+      LeftMotorsSpeed((someSpeed + accelSpeed) - (fabs(someSpeed + accelSpeed) * correctionAngle));
+      RightMotorsSpeed((someSpeed + accelSpeed) + (fabs(someSpeed + accelSpeed) * correctionAngle));
     }
     if (fabs(averageEncoderValue) >= fabs(encoderUnits) || averageMotorSpeed == 0) {
       distanceStep += 1;
