@@ -260,7 +260,7 @@ void goDistance(double inches, double percentPerSecond, double maxSpeed) {
     currentAutoStep = currentAutoStep + 1;
   } */
   
-  double encoderUnits = inches * 6050/12;
+  double encoderUnits = inches * 6100/12;
   double accelSpeed = (frc::Timer::GetFPGATimestamp() - distanceTimeStamp) * percentPerSecond;
 
   frc::SmartDashboard::PutNumber("encoderUnits", encoderUnits);
