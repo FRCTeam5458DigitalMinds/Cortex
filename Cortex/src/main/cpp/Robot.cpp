@@ -78,6 +78,8 @@ double distanceTimeStamp; //Used to keep track of how many seconds have passed s
 double someDistance; // The distance the bot reached when it went half the encoder units
 double someSpeed; //The speed the bot was traveling when it started to slow down
 //Other
+bool isAutoRunning;
+double autoStartingAngle;
 double averageEncoderValue;
 double averageMotorSpeed;
 double motorAccelerationSpeed;
@@ -190,7 +192,11 @@ void Robot::RobotPeriodic() {
 
 void drivingCorrection(){
   if (!isStartingAngleSet) {
-    startingAngle = gyro->GetAngle();
+    if (isAutoRunning){
+      startingAngle = autoStartingAngle;
+    } else {
+      startingAngle = gyro->GetAngle();
+    }
     isStartingAngleSet = true;
   } else {
     //Correction angle
@@ -233,8 +239,10 @@ void Robot::AutonomousInit() {
     gyro->Reset();
 
     //Reset correction variables
+    isAutoRunning = true;
     isStartingAngleSet = false;
     startingAngle = 0;
+    autoStartingAngle = gyro->GetAngle();
   }
 }
 
@@ -483,6 +491,7 @@ turnAccel = (frc::Timer::GetFPGATimestamp() - autoTimeStamp) * motorAcceleration
     case 5:
     LeftMotorsSpeed(0);
     RightMotorsSpeed(0);
+    autoStartingAngle = degrees;
     currentAutoStep += 1;
     turnStep = 1;
     break;
@@ -573,11 +582,13 @@ void Robot::AutonomousPeriodic() {
 
       case 5:
       stopAll();
+      isAutoRunning = false;
       break;
 
       default:
       LeftMotorsSpeed(0);
       RightMotorsSpeed(0);
+      isAutoRunning = false;
     }
   }
 }
@@ -593,6 +604,7 @@ void Robot::TeleopInit() {
   deltaSpeed = 0;
   accelerationRate = 0.5;
   gyro->Reset();
+  isAutoRunning = false;
 }
 
 //Teleop Functions
