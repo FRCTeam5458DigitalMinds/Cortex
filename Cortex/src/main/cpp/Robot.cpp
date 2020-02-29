@@ -164,10 +164,10 @@ void Robot::RobotPeriodic() {
   averageEncoderValue = (-(LeftMotorOne.GetSelectedSensorPosition()) + RightMotorOne.GetSelectedSensorPosition())/2;
 
   //Put values into shuffleboard
-  frc::SmartDashboard::PutNumber("Gyro Angle", gyro->GetAngle());
-  frc::SmartDashboard::PutNumber("Gyro Rate", gyro->GetRate());
-  frc::SmartDashboard::PutNumber("Correction Angle", correctionAngle);
-  frc::SmartDashboard::PutNumber("Some Angle", someAngle);
+  //frc::SmartDashboard::PutNumber("Gyro Angle", gyro->GetAngle());
+  //frc::SmartDashboard::PutNumber("Gyro Rate", gyro->GetRate());
+  //frc::SmartDashboard::PutNumber("Correction Angle", correctionAngle);
+  //frc::SmartDashboard::PutNumber("Some Angle", someAngle);
   frc::SmartDashboard::PutNumber("Left Motor Output", LeftMotorOne.GetMotorOutputPercent());
   frc::SmartDashboard::PutNumber("Right Motor Output", RightMotorOne.GetMotorOutputPercent());
   frc::SmartDashboard::PutNumber("Turn Step", turnStep);
@@ -175,8 +175,9 @@ void Robot::RobotPeriodic() {
   frc::SmartDashboard::PutNumber("Distance Step", distanceStep);
   frc::SmartDashboard::PutNumber("Average Encoder Value", averageEncoderValue);
   frc::SmartDashboard::PutNumber("Some Distance", someDistance);
+  frc::SmartDashboard::PutNumber("Some Speed", someSpeed);
   /*
-  //Now that we're using drivingCorrection() function during teleop and auto, we shouldn't need this
+  Now that we're using drivingCorrection() function during teleop and auto, we shouldn't need this
   //Correction angle
   if (gyro->GetRate() > 0) {
     correctionAngle = gyro->GetAngle()/180;
@@ -237,7 +238,7 @@ void Robot::AutonomousInit() {
 }
 
 //Autonomous Functions
-void goDistance(double inches, double accelerationRate, double maxSpeed) {
+void goDistance(double inches, double percentPerSecond, double maxSpeed) {
 
   /*
   double encoderUnits = inches * 4000/12;
@@ -273,11 +274,11 @@ void goDistance(double inches, double accelerationRate, double maxSpeed) {
 
     case 2:
     if (encoderUnits > 0){
-      LeftMotorsSpeed((frc::Timer::GetFPGATimestamp() - distanceTimeStamp) * accelerationRate);
-      RightMotorsSpeed((frc::Timer::GetFPGATimestamp() - distanceTimeStamp) * accelerationRate);
+      LeftMotorsSpeed((frc::Timer::GetFPGATimestamp() - distanceTimeStamp) * percentPerSecond);
+      RightMotorsSpeed((frc::Timer::GetFPGATimestamp() - distanceTimeStamp) * percentPerSecond);
     } else if (encoderUnits < 0){
-      LeftMotorsSpeed(-((frc::Timer::GetFPGATimestamp() - distanceTimeStamp) * accelerationRate));
-      RightMotorsSpeed(-((frc::Timer::GetFPGATimestamp() - distanceTimeStamp) * accelerationRate));
+      LeftMotorsSpeed(-((frc::Timer::GetFPGATimestamp() - distanceTimeStamp) * percentPerSecond));
+      RightMotorsSpeed(-((frc::Timer::GetFPGATimestamp() - distanceTimeStamp) * percentPerSecond));
     }
     if (fabs(averageMotorSpeed) >= maxSpeed) {
       someDistance = averageEncoderValue;
@@ -285,6 +286,7 @@ void goDistance(double inches, double accelerationRate, double maxSpeed) {
       distanceStep += 1;
     } else if (fabs(averageEncoderValue) > fabs(encoderUnits)/2) {
       someSpeed = averageMotorSpeed;
+      distanceTimeStamp = frc::Timer::GetFPGATimestamp();
       distanceStep += 2;
     }
     break;
@@ -306,11 +308,11 @@ void goDistance(double inches, double accelerationRate, double maxSpeed) {
 
     case 4:
     if (encoderUnits > 0) {
-      LeftMotorsSpeed(someSpeed - (frc::Timer::GetFPGATimestamp() - distanceTimeStamp) * accelerationRate);
-      RightMotorsSpeed(someSpeed - (frc::Timer::GetFPGATimestamp() - distanceTimeStamp) * accelerationRate);
+      LeftMotorsSpeed(someSpeed - (frc::Timer::GetFPGATimestamp() - distanceTimeStamp) * percentPerSecond);
+      RightMotorsSpeed(someSpeed - (frc::Timer::GetFPGATimestamp() - distanceTimeStamp) * percentPerSecond);
     } else if (encoderUnits < 0) {
-      LeftMotorsSpeed(someSpeed + (frc::Timer::GetFPGATimestamp() - distanceTimeStamp) * accelerationRate);
-      RightMotorsSpeed(someSpeed + (frc::Timer::GetFPGATimestamp() - distanceTimeStamp) * accelerationRate);
+      LeftMotorsSpeed(someSpeed + (frc::Timer::GetFPGATimestamp() - distanceTimeStamp) * percentPerSecond);
+      RightMotorsSpeed(someSpeed + (frc::Timer::GetFPGATimestamp() - distanceTimeStamp) * percentPerSecond);
     }
     if (fabs(averageEncoderValue) >= fabs(encoderUnits) || averageMotorSpeed == 0) {
       distanceStep += 1;
