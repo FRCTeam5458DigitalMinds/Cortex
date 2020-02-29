@@ -336,7 +336,7 @@ void goDistance(double inches, double percentPerSecond, double maxSpeed) {
   }
 }
 
-void turn(double degrees, double maxSpeed, double percentPerSecond){
+void turn(double degrees, double percentPerSecond, double maxSpeed) {
   
   averageMotorSpeed = (LeftMotorOne.GetMotorOutputPercent() + RightMotorOne.GetMotorOutputPercent())/2;
 
@@ -447,6 +447,7 @@ turnAccel = (frc::Timer::GetFPGATimestamp() - autoTimeStamp) * motorAcceleration
     } else if (fabs(gyro->GetAngle()) > fabs(degrees/2)){
       highestTurnSpeed = fabs(averageMotorSpeed);
       someAngle = gyro->GetAngle();
+      turnTimeStamp = frc::Timer::GetFPGATimestamp();
       turnStep += 2;
     }
     break;
@@ -460,18 +461,19 @@ turnAccel = (frc::Timer::GetFPGATimestamp() - autoTimeStamp) * motorAcceleration
       RightMotorsSpeed(highestTurnSpeed);
     }
     if ((fabs(gyro->GetAngle()) > fabs(degrees) - fabs(someAngle))) {
+      turnTimeStamp = frc::Timer::GetFPGATimestamp();
       turnStep += 1;
     }
     break;
 
     case 4:
     if (gyro->GetAngle() < degrees) {
-      LeftMotorsSpeed(highestTurnSpeed * ((fabs(degrees) - fabs(gyro->GetAngle()) / fabs(someAngle))));
-      RightMotorsSpeed(-(highestTurnSpeed * ((fabs(degrees) - fabs(gyro->GetAngle()) / fabs(someAngle)))));
+      LeftMotorsSpeed(highestTurnSpeed - ((frc::Timer::GetFPGATimestamp() - turnTimeStamp) * percentPerSecond));
+      RightMotorsSpeed(-(highestTurnSpeed - ((frc::Timer::GetFPGATimestamp() - turnTimeStamp) * percentPerSecond)));
     } else if (gyro->GetAngle() > degrees) {
-      LeftMotorsSpeed(-(highestTurnSpeed * ((fabs(degrees) - fabs(gyro->GetAngle()) / fabs(someAngle)))));
-      RightMotorsSpeed(highestTurnSpeed * ((fabs(degrees) - fabs(gyro->GetAngle()) / fabs(someAngle))));
-    }   
+      LeftMotorsSpeed(-(highestTurnSpeed - ((frc::Timer::GetFPGATimestamp() - turnTimeStamp) * percentPerSecond)));
+      RightMotorsSpeed(highestTurnSpeed - ((frc::Timer::GetFPGATimestamp() - turnTimeStamp) * percentPerSecond));
+    }
     if (fabs(gyro->GetAngle()) >= fabs(degrees)){
       turnStep += 1;
     }
@@ -557,15 +559,20 @@ void Robot::AutonomousPeriodic() {
       break;
       
       case 2:
-      delay(3);
+      delay(1);
       break;
 
       case 3:
-      goDistance(-60, 0.1, 0.2);
+      turn(180, 0.1, 0.2);
       break;
       
       case 4:
+      goDistance(60, 0.1, 0.2);
+      break;
+
+      case 5:
       stopAll();
+      break;
 
       default:
       LeftMotorsSpeed(0);
