@@ -218,6 +218,7 @@ void Robot::AutonomousInit() {
     someAngle = 0;
     highestTurnSpeed = 0;
     turnStep = 1;
+    distanceStep = 1;
     LeftMotorOne.SetSelectedSensorPosition(0);
     RightMotorOne.SetSelectedSensorPosition(0);
     gyro->Reset();
