@@ -259,6 +259,9 @@ void goDistance(double inches, double accelerationRate, double maxSpeed) {
   } */
   
   double encoderUnits = inches * 4000/12;
+
+  frc::SmartDashboard::PutNumber("encoderUnits", encoderUnits);
+
   switch (distanceStep) {
     case 1:
     LeftMotorOne.SetSelectedSensorPosition(0);
