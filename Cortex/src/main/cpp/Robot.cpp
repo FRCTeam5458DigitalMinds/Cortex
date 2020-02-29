@@ -260,7 +260,7 @@ void goDistance(double inches, double percentPerSecond, double maxSpeed) {
     currentAutoStep = currentAutoStep + 1;
   } */
   
-  double encoderUnits = inches * 4000/12;
+  double encoderUnits = inches * 6000/12;
 
   frc::SmartDashboard::PutNumber("encoderUnits", encoderUnits);
 
