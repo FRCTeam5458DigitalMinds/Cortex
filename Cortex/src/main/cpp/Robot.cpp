@@ -164,18 +164,18 @@ void Robot::RobotPeriodic() {
   averageEncoderValue = (-(LeftMotorOne.GetSelectedSensorPosition()) + RightMotorOne.GetSelectedSensorPosition())/2;
 
   //Put values into shuffleboard
-  //frc::SmartDashboard::PutNumber("Gyro Angle", gyro->GetAngle());
-  //frc::SmartDashboard::PutNumber("Gyro Rate", gyro->GetRate());
-  //frc::SmartDashboard::PutNumber("Correction Angle", correctionAngle);
-  //frc::SmartDashboard::PutNumber("Some Angle", someAngle);
-  frc::SmartDashboard::PutNumber("Left Motor Output", LeftMotorOne.GetMotorOutputPercent());
-  frc::SmartDashboard::PutNumber("Right Motor Output", RightMotorOne.GetMotorOutputPercent());
+  frc::SmartDashboard::PutNumber("Gyro Angle", gyro->GetAngle());
+  frc::SmartDashboard::PutNumber("Gyro Rate", gyro->GetRate());
+  frc::SmartDashboard::PutNumber("Correction Angle", correctionAngle);
+  frc::SmartDashboard::PutNumber("Some Angle", someAngle);
+  //frc::SmartDashboard::PutNumber("Left Motor Output", LeftMotorOne.GetMotorOutputPercent());
+  //frc::SmartDashboard::PutNumber("Right Motor Output", RightMotorOne.GetMotorOutputPercent());
   frc::SmartDashboard::PutNumber("Turn Step", turnStep);
   frc::SmartDashboard::PutNumber("Highest Turn Speed", highestTurnSpeed);
-  frc::SmartDashboard::PutNumber("Distance Step", distanceStep);
-  frc::SmartDashboard::PutNumber("Average Encoder Value", averageEncoderValue);
-  frc::SmartDashboard::PutNumber("Some Distance", someDistance);
-  frc::SmartDashboard::PutNumber("Some Speed", someSpeed);
+  //frc::SmartDashboard::PutNumber("Distance Step", distanceStep);
+  //frc::SmartDashboard::PutNumber("Average Encoder Value", averageEncoderValue);
+  //frc::SmartDashboard::PutNumber("Some Distance", someDistance);
+  //frc::SmartDashboard::PutNumber("Some Speed", someSpeed);
   /*
   Now that we're using drivingCorrection() function during teleop and auto, we shouldn't need this
   //Correction angle
