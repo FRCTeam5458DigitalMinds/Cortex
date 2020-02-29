@@ -78,6 +78,7 @@ double distanceTimeStamp; //Used to keep track of how many seconds have passed s
 double someDistance; // The distance the bot reached when it went half the encoder units
 double someSpeed; //The speed the bot was traveling when it started to slow down
 //Other
+double averageEncoderValue;
 double averageMotorSpeed;
 double motorAccelerationSpeed;
 double amountToAccelerate;
@@ -168,6 +169,8 @@ void Robot::RobotPeriodic() {
   frc::SmartDashboard::PutNumber("Turn Step", turnStep);
   frc::SmartDashboard::PutNumber("Highest Turn Speed", highestTurnSpeed);
   frc::SmartDashboard::PutNumber("Distance Step", distanceStep);
+  frc::SmartDashboard::PutNumber("Average Encoder Value", averageEncoderValue);
+  frc::SmartDashboard::PutNumber("Some Distance", someDistance);
   /*
   //Now that we're using drivingCorrection() function during teleop and auto, we shouldn't need this
   //Correction angle
@@ -233,7 +236,7 @@ void Robot::AutonomousInit() {
 void goDistance(double inches, double accelerationRate, double maxSpeed) {
 
   averageMotorSpeed = (-(LeftMotorOne.GetMotorOutputPercent()) + RightMotorOne.GetMotorOutputPercent())/2;
-  double averageEncoderValue = (-(LeftMotorOne.GetSelectedSensorPosition()) + RightMotorOne.GetSelectedSensorPosition())/2;
+  averageEncoderValue = (-(LeftMotorOne.GetSelectedSensorPosition()) + RightMotorOne.GetSelectedSensorPosition())/2;
 
   /*
   double encoderUnits = inches * 4000/12;
@@ -274,6 +277,7 @@ void goDistance(double inches, double accelerationRate, double maxSpeed) {
     }
     if (fabs(averageMotorSpeed) >= maxSpeed) {
       someDistance = averageEncoderValue;
+      someSpeed = maxSpeed;
       distanceStep += 1;
     } else if (fabs(averageEncoderValue) > fabs(encoderUnits)/2) {
       someSpeed = averageMotorSpeed;
@@ -304,7 +308,7 @@ void goDistance(double inches, double accelerationRate, double maxSpeed) {
       LeftMotorsSpeed(someSpeed + (frc::Timer::GetFPGATimestamp() - distanceTimeStamp) * accelerationRate);
       RightMotorsSpeed(someSpeed + (frc::Timer::GetFPGATimestamp() - distanceTimeStamp) * accelerationRate);
     }
-    if (averageEncoderValue >= encoderUnits || averageMotorSpeed == 0) {
+    if (fabs(averageEncoderValue) >= fabs(encoderUnits) || averageMotorSpeed == 0) {
       distanceStep += 1;
     }
     break;
@@ -536,9 +540,6 @@ void Robot::AutonomousPeriodic() {
     // Gyro Correction variables
     float sumAngle = gyro->GetAngle();
 		float derivAngle = sumAngle - lastSumAngle;
-
-    frc::SmartDashboard::PutNumber("RightEncoderOne", RightMotorOne.GetSelectedSensorPosition());
-    frc::SmartDashboard::PutNumber("LeftEncoderOne", LeftMotorOne.GetSelectedSensorPosition());
 
     switch (currentAutoStep){
       case 1:
