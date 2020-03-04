@@ -77,6 +77,11 @@ int distanceStep; //Current step of the goDistance function
 double distanceTimeStamp; //Used to keep track of how many seconds have passed since a certain point
 double someDistance; // The distance the bot reached when it went half the encoder units
 double someSpeed; //The speed the bot was traveling when it started to slow down
+//Arc Turning
+int arcStep;
+double arcTimeStamp;
+double highestArcSpeed;
+
 //Other
 bool isAutoRunning;
 double autoStartingAngle;
@@ -241,6 +246,7 @@ void Robot::AutonomousInit() {
     highestTurnSpeed = 0;
     turnStep = 1;
     distanceStep = 1;
+    arcStep = 1;
     LeftMotorOne.SetSelectedSensorPosition(0);
     RightMotorOne.SetSelectedSensorPosition(0);
 
@@ -325,7 +331,7 @@ void goDistance(double inches, double percentPerSecond, double maxSpeed) {
       someSpeed = maxSpeed;
       distanceStep += 1;
     } else if (fabs(averageEncoderValue) > fabs(encoderUnits)/2) {
-      someSpeed = averageMotorSpeed;
+      someSpeed = fabs(averageMotorSpeed);
       distanceTimeStamp = frc::Timer::GetFPGATimestamp();
       distanceStep += 2;
     }
@@ -340,19 +346,19 @@ void goDistance(double inches, double percentPerSecond, double maxSpeed) {
       RightMotorsSpeed(-maxSpeed - (fabs(maxSpeed) * correctionAngle));
     }
     if (fabs(averageEncoderValue) > fabs(encoderUnits) - fabs(someDistance)) {
-      someSpeed = averageMotorSpeed;
+      someSpeed = fabs(averageMotorSpeed);
       distanceTimeStamp = frc::Timer::GetFPGATimestamp();
       distanceStep += 1;
     }
     break;
-
+    //We could change step for to be like void turn by having it deccelerate based on someSpeed / maxSpeed
     case 4:
     if (encoderUnits > 0) {
-      LeftMotorsSpeed((someSpeed - accelSpeed) - (fabs(someSpeed - accelSpeed) * correctionAngle));
-      RightMotorsSpeed((someSpeed - accelSpeed) + (fabs(someSpeed - accelSpeed) * correctionAngle));
+      LeftMotorsSpeed((someSpeed - accelSpeed * (someSpeed / maxSpeed)) - (fabs(someSpeed - accelSpeed) * correctionAngle));
+      RightMotorsSpeed((someSpeed - accelSpeed * (someSpeed / maxSpeed)) + (fabs(someSpeed - accelSpeed) * correctionAngle));
     } else if (encoderUnits < 0) {
-      LeftMotorsSpeed((someSpeed + accelSpeed) - (fabs(someSpeed + accelSpeed) * correctionAngle));
-      RightMotorsSpeed((someSpeed + accelSpeed) + (fabs(someSpeed + accelSpeed) * correctionAngle));
+      LeftMotorsSpeed((someSpeed + accelSpeed * (someSpeed / maxSpeed)) - (fabs(someSpeed + accelSpeed) * correctionAngle));
+      RightMotorsSpeed((someSpeed + accelSpeed * (someSpeed/maxSpeed)) + (fabs(someSpeed + accelSpeed) * correctionAngle));
     }
     if (fabs(averageEncoderValue) >= fabs(encoderUnits) || averageMotorSpeed == 0) {
       distanceStep += 1;
@@ -519,6 +525,7 @@ turnAccel = (frc::Timer::GetFPGATimestamp() - autoTimeStamp) * motorAcceleration
     case 5:
     LeftMotorsSpeed(0);
     RightMotorsSpeed(0);
+    isStartingAngleSet = false;
     autoStartingAngle = degrees;
     currentAutoStep += 1;
     turnStep = 1;
@@ -532,32 +539,87 @@ turnAccel = (frc::Timer::GetFPGATimestamp() - autoTimeStamp) * motorAcceleration
   frc::SmartDashboard::PutNumber("Deceleration Rate", ((fabs(degrees) - fabs(gyro->GetAngle()) / fabs(someAngle))));
 }
 
-void rotationalAcceleration() {
-  /*
-  gyro->GetAngle();
-  gyro->GetRate();
+void arcTurning(double degrees, double radius, double percentPerSecond, double maxSpeed, bool isBackwards) {
+  double centerDist;
+  double leftDist;
+  double rightDist;
 
-  What we know:
-  Radius of Wheel: 3 in
-  Rotation Rate: gyro->GetRate() in deg/sec
-  Motor Speed: ?
+  switch (arcStep) {
+    case 1:
+    gyro->Reset();
+    arcTimeStamp = frc::Timer::GetFPGATimestamp();
+    centerDist = 2 * 3.1415 * radius * (fabs(degrees)/360);
+    if ((degrees > 0 && !isBackwards) || (degrees < 0 && isBackwards)) {
+      leftDist = 2 * 3.1415 * (radius + 13.75) * (fabs(degrees)/360);
+      rightDist = 2 * 3.1415 * (radius - 13.75) * (fabs(degrees)/360);
+    } else if ((degrees < 0 && !isBackwards || (degrees > 0 && isBackwards))) {
+      leftDist = 2 * 3.1415 * (radius - 13.75) * (fabs(degrees)/360);
+      rightDist = 2 * 3.1415 * (radius + 13.75) * (fabs(degrees)/360);
+    }
+    arcStep += 1;
+    break;
 
-  What we want to do:
-  Accelerate turning based on rotations of the wheel rather than percent power
+    case 2:
+    if (isBackwards){
+      LeftMotorsSpeed(-(frc::Timer::GetFPGATimestamp() - arcTimeStamp) * percentPerSecond * (leftDist / centerDist));
+      RightMotorsSpeed(-(frc::Timer::GetFPGATimestamp() - arcTimeStamp) * percentPerSecond * (rightDist / centerDist));
+    } else if (!isBackwards) {
+      LeftMotorsSpeed((frc::Timer::GetFPGATimestamp() - arcTimeStamp) * percentPerSecond * (leftDist / centerDist));
+      RightMotorsSpeed((frc::Timer::GetFPGATimestamp() - arcTimeStamp) * percentPerSecond * (rightDist / centerDist));
+    }
 
-  Attempt:
-  double amountToAccelerate = sqrt(gyro->GetRate());
-  double motorAccelerationSpeed = amountToAccelerate (angular velocity) * 3 (3 in radius);
+    if (fabs(averageMotorSpeed) >= maxSpeed) {
+      someAngle = gyro->GetAngle();
+      highestArcSpeed = maxSpeed;
+      arcStep += 1;
+    } else if (fabs(gyro->GetAngle()) > fabs(degrees) / 2) {
+      highestArcSpeed = averageMotorSpeed;
+      someAngle = gyro->GetAngle();
+      arcTimeStamp = frc::Timer::GetFPGATimestamp();
+      arcStep += 2;
+    }
+    break;
 
+    case 3:
+    if (isBackwards){
+      LeftMotorsSpeed(-maxSpeed * (leftDist / centerDist));
+      RightMotorsSpeed(-maxSpeed * (rightDist / centerDist));
+    } else if (!isBackwards) {
+      LeftMotorsSpeed(maxSpeed * (leftDist / centerDist));
+      RightMotorsSpeed(maxSpeed * (rightDist / centerDist));
+    }
+    if (fabs(gyro->GetAngle() > fabs(degrees) - someAngle)) {
+      arcTimeStamp = frc::Timer::GetFPGATimestamp();
+      arcStep += 1;
+    }
+    break;
 
-  rotationalAcceleration
-  LeftMotorsSpeed(motorAccelerationSpeed);
+    case 4:
+    if (isBackwards) {
+      LeftMotorsSpeed(-highestArcSpeed + ((frc::Timer::GetFPGATimestamp() - arcTimeStamp) * percentPerSecond * (leftDist / centerDist) * (highestArcSpeed / maxSpeed)));
+      RightMotorsSpeed(-highestArcSpeed + ((frc::Timer::GetFPGATimestamp() - arcTimeStamp) * percentPerSecond * (rightDist / centerDist) * (highestArcSpeed / maxSpeed)));
+    } else if (!isBackwards) {
+      LeftMotorsSpeed(highestArcSpeed - ((frc::Timer::GetFPGATimestamp() - arcTimeStamp) * percentPerSecond * (leftDist / centerDist) * (highestArcSpeed / maxSpeed)));
+      RightMotorsSpeed(highestArcSpeed - ((frc::Timer::GetFPGATimestamp() - arcTimeStamp) * percentPerSecond * (rightDist / centerDist) * (highestArcSpeed / maxSpeed)));
+    }
+    if (averageMotorSpeed == 0 || fabs(gyro->GetAngle()) >= fabs(degrees)){
+      arcStep += 1;
+    }
+    break;
 
-  Steps:
-  1. correct driving during teleop
-  2. correct turn function so it goes until sum angle = 180
-  3. make turn function so it does sqrt function above
-  */
+    case 5:
+    LeftMotorsSpeed(0);
+    RightMotorsSpeed(0);
+    isStartingAngleSet = false;
+    autoStartingAngle = degrees;
+    arcStep = 1;
+    currentAutoStep += 1;
+    break;
+    
+    default:
+    LeftMotorsSpeed(0);
+    RightMotorsSpeed(0);
+  }
 } 
 
 void delay(double seconds) {
@@ -593,7 +655,7 @@ void Robot::AutonomousPeriodic() {
 
     switch (currentAutoStep){
       case 1:
-      goDistance(60, 0.1, 0.2);
+      arcTurning(180, 60, 0.1, 0.2, false);
       break;
       
       case 2:
@@ -601,14 +663,10 @@ void Robot::AutonomousPeriodic() {
       break;
 
       case 3:
-      turn(180, 0.1, 0.2);
-      break;
-      
-      case 4:
-      goDistance(60, 0.1, 0.2);
+      arcTurning(180, 60, 0.1, 0.2, true);      
       break;
 
-      case 5:
+      case 4:
       stopAll();
       isAutoRunning = false;
       break;
