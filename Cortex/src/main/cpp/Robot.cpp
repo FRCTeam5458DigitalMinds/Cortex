@@ -103,6 +103,10 @@ bool isStartingAngleSet;
 double startingAngle;
 double someAngle;
 
+//TEST
+float lastSumAngle2 = 0, lastSumDistance2 = 0;
+double correctionAngle2 = 0, correctionDistance2 = 0;
+
 //Wheel Diameter: between 6.1 and 6.2 (6.15)
 
 //Functions
@@ -168,7 +172,8 @@ void Robot::RobotPeriodic() {
   //Put values into shuffleboard
   frc::SmartDashboard::PutNumber("Gyro Angle", gyro->GetAngle());
   //frc::SmartDashboard::PutNumber("Gyro Rate", gyro->GetRate());
-  frc::SmartDashboard::PutNumber("Correction Angle", correctionAngle);
+  frc::SmartDashboard::PutNumber("Correction Angle", correctionAngle2);
+  frc::SmartDashboard::PutNumber("Correction Distance", correctionDistance2);
   frc::SmartDashboard::PutNumber("Some Angle", someAngle);
   //frc::SmartDashboard::PutNumber("Left Motor Output", LeftMotorOne.GetMotorOutputPercent());
   //frc::SmartDashboard::PutNumber("Right Motor Output", RightMotorOne.GetMotorOutputPercent());
@@ -177,9 +182,10 @@ void Robot::RobotPeriodic() {
   frc::SmartDashboard::PutNumber("CurrentAutoStep", currentAutoStep);
   frc::SmartDashboard::PutNumber("Starting Angle", startingAngle);
   //frc::SmartDashboard::PutNumber("Distance Step", distanceStep);
-  //frc::SmartDashboard::PutNumber("Average Encoder Value", averageEncoderValue);
+  frc::SmartDashboard::PutNumber("Average Encoder Value", averageEncoderValue);
   //frc::SmartDashboard::PutNumber("Some Distance", someDistance);
   //frc::SmartDashboard::PutNumber("Some Speed", someSpeed);
+
   /*
   Now that we're using drivingCorrection() function during teleop and auto, we shouldn't need this
   //Correction angle
@@ -237,7 +243,8 @@ void Robot::AutonomousInit() {
     distanceStep = 1;
     LeftMotorOne.SetSelectedSensorPosition(0);
     RightMotorOne.SetSelectedSensorPosition(0);
-    gyro->Reset();
+
+    gyro->Calibrate();
 
     //Reset correction variables
     isAutoRunning = true;
@@ -269,6 +276,26 @@ void goDistance(double inches, double percentPerSecond, double maxSpeed) {
     RightMotorOne.SetSelectedSensorPosition(0);
     currentAutoStep = currentAutoStep + 1;
   } */
+
+  // float lastSumAngle = 0, lastSumDistance = 0;
+  // double pgain = frc::SmartDashboard::GetNumber("pgain", .1);
+  // double dgain = frc::SmartDashboard::GetNumber("dgain", .05);
+
+  // averageEncoderValue = (-(LeftMotorOne.GetSelectedSensorPosition() + RightMotorOne.GetSelectedSensorPosition()))/2;
+  // float sumDistance = averageEncoderValue;
+  // float derivDistance = sumDistance - lastSumDistance2;
+  // correctionDistance2 = ((inches - sumDistance) * .06) - (derivDistance * .4);
+
+  // float sumAngle = gyro->GetAngle();
+  // float derivAngle = sumAngle - lastSumAngle2;
+  // correctionAngle2 = (sumAngle * pgain) + (derivAngle * dgain); //kpe ,008
+    
+
+  // LeftMotorsSpeed(-correctionAngle2);
+  // RightMotorsSpeed(correctionAngle2);
+
+  // lastSumAngle2 = sumAngle;
+  // lastSumDistance2 = sumDistance;
   
   double encoderUnits = inches * 6075/12;
   double accelSpeed = (frc::Timer::GetFPGATimestamp() - distanceTimeStamp) * percentPerSecond;
@@ -594,6 +621,30 @@ void Robot::AutonomousPeriodic() {
   }
 }
 
+void TestInit(){
+    //Auto Init
+    currentAutoStep = 1;
+    isDelayTimeStampSet = false;
+    delayTimeStamp = 0;
+    someAngle = 0;
+    highestTurnSpeed = 0;
+    turnStep = 1;
+    distanceStep = 1;
+    LeftMotorOne.SetSelectedSensorPosition(0);
+    RightMotorOne.SetSelectedSensorPosition(0);
+    gyro->Calibrate();
+
+    //Reset correction variables
+    isAutoRunning = true;
+    isStartingAngleSet = false;
+    startingAngle = 0;
+    autoStartingAngle = gyro->GetAngle();
+}
+
+void Robot::TestPeriodic(){
+  goDistance(0,0,0);
+}
+
 void Robot::TeleopInit() {
   //Reset encoder values
   RightMotorOne.SetSelectedSensorPosition(0);
@@ -744,8 +795,6 @@ void Robot::TeleopPeriodic() {
   frc::SmartDashboard::PutNumber("AccelerationSpeed", accelerationSpeed);
   frc::SmartDashboard::PutNumber("Acceleration Rate", accelerationRate);
 }
-
-void Robot::TestPeriodic() {}
 
 #ifndef RUNNING_FRC_TESTS
 int main() { return frc::StartRobot<Robot>(); }
