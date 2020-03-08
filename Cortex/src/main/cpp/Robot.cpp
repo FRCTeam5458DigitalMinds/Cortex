@@ -45,6 +45,19 @@ TalonSRX colorMotor{5};
 //Gyro
 frc::ADXRS450_Gyro *gyro;
 
+/*
+Xbox Buttons:
+Right Bumper : 6
+Left Bumper: 5
+Right Trigger: Axis 3
+Left Trigger: Axis 2
+D-Pad Up: POV Up
+D-Pad Down: POV Down
+A: 1
+B: 2
+X: 3
+Y: 4
+*/
 //Joysticks
 frc::Joystick JoyAccel1{0}, Xbox{1}, RaceWheel{2};
 
@@ -190,6 +203,7 @@ void Robot::RobotPeriodic() {
   frc::SmartDashboard::PutNumber("Average Encoder Value", averageEncoderValue);
   //frc::SmartDashboard::PutNumber("Some Distance", someDistance);
   //frc::SmartDashboard::PutNumber("Some Speed", someSpeed);
+  frc::SmartDashboard::PutNumber("Xbox POV", Xbox.GetPOV());
 
   /*
   Now that we're using drivingCorrection() function during teleop and auto, we shouldn't need this
