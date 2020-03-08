@@ -45,6 +45,18 @@ TalonSRX colorMotor{5};
 //Gyro
 frc::ADXRS450_Gyro *gyro;
 
+//Intakes
+TalonSRX FrontIntake{100};
+TalonSRX BackIntake{101};
+
+//Conveyor
+TalonSRX LeftConveyor{102};
+TalonSRX RightConveyor{103};
+
+//Shooter
+TalonFX LeftShooter{104};
+TalonFX RightShooter{105};
+
 /*
 Xbox Buttons:
 Right Bumper : 6
@@ -62,11 +74,11 @@ Y: 4
 frc::Joystick JoyAccel1{0}, Xbox{1}, RaceWheel{2};
 
 //Solenoids
-frc::Solenoid solenoid0{0};
-frc::Solenoid solenoid1{1};
-frc::Solenoid solenoid2{2};
-frc::Solenoid solenoid3{3};
-frc::Solenoid solenoid4{4};
+frc::Solenoid FrontIntakePiston{0}; 
+frc::Solenoid BackIntakePiston{1}; 
+frc::Solenoid ConveyorPiston{2}; 
+frc::Solenoid solenoid3{3}; 
+frc::Solenoid solenoid4{4}; 
 
 //Teleop variables
 double JoyY;
@@ -76,6 +88,7 @@ bool inverted = false;
 bool isDelayTimeStampSet;
 double delayTimeStamp;
 double accelerationRate = 0.5;
+bool switchedIntakes;
 
 //Auto Variables
 //Turning
@@ -138,6 +151,15 @@ void RightMotorsSpeed(double speed) {
   RightMotorTwo.Set(ControlMode::PercentOutput, speed);
   RightMotorThree.Set(ControlMode::PercentOutput, speed);
 }
+void Shooter(double speed){
+  LeftShooter.Set(ControlMode::PercentOutput, speed);
+  RightShooter.Set(ControlMode::PercentOutput, -speed);
+}
+void Conveyor(double leftSpeed, double rightSpeed){
+  LeftConveyor.Set(ControlMode::PercentOutput, leftSpeed);
+  RightConveyor.Set(ControlMode::PercentOutput, rightSpeed);
+}
+
 
 void music() {
   /*If we ever have extra time,
@@ -271,6 +293,10 @@ void Robot::AutonomousInit() {
     isStartingAngleSet = false;
     startingAngle = 0;
     autoStartingAngle = gyro->GetAngle();
+    
+    FrontIntakePiston.Set(false);
+    BackIntakePiston.Set(false);
+    ConveyorPiston.Set(false);
   }
 }
 
@@ -729,6 +755,11 @@ void Robot::TeleopInit() {
   accelerationRate = 0.5;
   gyro->Reset();
   isAutoRunning = false;
+  switchedIntakes = false;
+
+  FrontIntakePiston.Set(false);
+  BackIntakePiston.Set(false);
+  ConveyorPiston.Set(false);
 }
 
 //Teleop Functions
@@ -854,8 +885,62 @@ void Robot::TeleopPeriodic() {
     inverted = !inverted;
   }
 
-  lastSumAngle = sumAngle;
+  //lastSumAngle = sumAngle;
 
+  //Code for shooting
+  if (Xbox.GetRawAxis(3) > 0.05) {
+    Shooter(0.5); //if we increase shooter speed, remember to also increase speed average motor speed has to be greater than
+    if ((fabs(LeftShooter.GetMotorOutputPercent()) + fabs(RightShooter.GetMotorOutputPercent()) / 2) > 0.45) {
+      Conveyor(-0.2, -0.2);
+      ConveyorPiston.Set(true);
+    }
+  } else {
+    Shooter(0);
+    Conveyor(0, 0);
+    ConveyorPiston.Set(false);
+  }
+
+  //Code for intaking
+  if (Xbox.GetRawButton(4)){
+    FrontIntake.Set(ControlMode::PercentOutput, 0.75);
+    BackIntake.Set(ControlMode::PercentOutput, 0);
+    Conveyor(-0.2, -0.2);
+  } else if (Xbox.GetRawButton(1)) {
+    FrontIntake.Set(ControlMode::PercentOutput, 0);
+    BackIntake.Set(ControlMode::PercentOutput, 0.75);
+    Conveyor(-0.2, -0.2);
+  }
+
+  //Code for spitting
+  if (Xbox.GetPOV() == 0){
+    FrontIntake.Set(ControlMode::PercentOutput, -0.75);
+    BackIntake.Set(ControlMode::PercentOutput, 0);
+    Conveyor(-0.2, 0.2);
+  } else if (Xbox.GetPOV() == 180){
+    FrontIntake.Set(ControlMode::PercentOutput, 0);
+    BackIntake.Set(ControlMode::PercentOutput, -0.75);
+    Conveyor(0.2, -0.2);
+  } else {
+    FrontIntake.Set(ControlMode::PercentOutput, 0);
+    BackIntake.Set(ControlMode::PercentOutput, 0);
+    Conveyor(0, 0);
+  }
+
+  //Code for intake pistons
+  if (Xbox.GetRawButtonPressed(5)) {
+    BackIntakePiston.Set(!FrontIntakePiston.Get());
+  } 
+  if (Xbox.GetRawButtonPressed(6)){
+    FrontIntakePiston.Set(!FrontIntakePiston.Get());
+  }
+  if (Xbox.GetRawAxis(2) > 0.05 && !switchedIntakes){
+    FrontIntakePiston.Set(!FrontIntakePiston.Get());
+    BackIntakePiston.Set(!FrontIntakePiston.Get());
+    switchedIntakes = true;
+  } else if (Xbox.GetRawAxis(2) < 0.05){
+    switchedIntakes = false;
+  }
+  
   //Putting values into Shuffleboard
   //Get encoder values from falcons (built in encoders) and other motors
   frc::SmartDashboard::PutNumber("RightEncoderOne", RightMotorOne.GetSelectedSensorPosition());
