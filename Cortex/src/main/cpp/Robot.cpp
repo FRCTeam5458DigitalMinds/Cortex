@@ -74,10 +74,10 @@ Y: 4
 frc::Joystick JoyAccel1{0}, Xbox{1}, RaceWheel{2};
 
 //Solenoids
-frc::Solenoid FrontIntakePiston{0}; 
-frc::Solenoid BackIntakePiston{1}; 
-frc::Solenoid ConveyorPiston{2}; 
-frc::Solenoid solenoid3{3}; 
+frc::Solenoid solenoid0{0}; 
+frc::Solenoid ConveyorPiston{1}; 
+frc::Solenoid BackIntakePiston{2}; 
+frc::Solenoid FrontIntakePiston{3}; 
 frc::Solenoid solenoid4{4}; 
 
 //Teleop variables
@@ -888,7 +888,7 @@ void Robot::TeleopPeriodic() {
   //lastSumAngle = sumAngle;
 
   //Code for shooting
-  if (Xbox.GetRawAxis(3) > 0.05) {
+  if (Xbox.GetRawButton(2) > 0.05) {
     Shooter(0.5); //if we increase shooter speed, remember to also increase speed average motor speed has to be greater than
     ConveyorPiston.Set(true);
     if ((fabs(LeftShooter.GetMotorOutputPercent()) + fabs(RightShooter.GetMotorOutputPercent()) / 2) > 0.45) {
