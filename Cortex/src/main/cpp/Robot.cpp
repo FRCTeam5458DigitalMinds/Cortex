@@ -888,9 +888,9 @@ void Robot::TeleopPeriodic() {
   //lastSumAngle = sumAngle;
 
   //Code for shooting
-  if (Xbox.GetRawButton(2) > 0.05) {
+  if (Xbox.GetRawButton(3)) {
     Shooter(0.5); //if we increase shooter speed, remember to also increase speed average motor speed has to be greater than
-    ConveyorPiston.Set(true);
+    ConveyorPiston.Set(!ConveyorPiston.Get());
     if ((fabs(LeftShooter.GetMotorOutputPercent()) + fabs(RightShooter.GetMotorOutputPercent()) / 2) > 0.45) {
       Conveyor(-0.2, -0.2);
       ConveyorPiston.Set(true);
@@ -929,7 +929,7 @@ void Robot::TeleopPeriodic() {
 
   //Code for intake pistons
   if (Xbox.GetRawButtonPressed(5)) {
-    BackIntakePiston.Set(!FrontIntakePiston.Get());
+    BackIntakePiston.Set(!BackIntakePiston.Get());
   } 
   if (Xbox.GetRawButtonPressed(6)){
     FrontIntakePiston.Set(!FrontIntakePiston.Get());
