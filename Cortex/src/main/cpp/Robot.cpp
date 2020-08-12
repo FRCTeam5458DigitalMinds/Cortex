@@ -890,6 +890,7 @@ void Robot::TeleopPeriodic() {
   //Code for shooting
   if (Xbox.GetRawAxis(3) > 0.05) {
     Shooter(0.5); //if we increase shooter speed, remember to also increase speed average motor speed has to be greater than
+    ConveyorPiston.Set(true);
     if ((fabs(LeftShooter.GetMotorOutputPercent()) + fabs(RightShooter.GetMotorOutputPercent()) / 2) > 0.45) {
       Conveyor(-0.2, -0.2);
       ConveyorPiston.Set(true);
@@ -933,13 +934,13 @@ void Robot::TeleopPeriodic() {
   if (Xbox.GetRawButtonPressed(6)){
     FrontIntakePiston.Set(!FrontIntakePiston.Get());
   }
-  if (Xbox.GetRawAxis(2) > 0.05 && !switchedIntakes){
+  /*if (Xbox.GetRawAxis(2) > 0.05 && !switchedIntakes){
     FrontIntakePiston.Set(!FrontIntakePiston.Get());
     BackIntakePiston.Set(!FrontIntakePiston.Get());
     switchedIntakes = true;
   } else if (Xbox.GetRawAxis(2) < 0.05){
     switchedIntakes = false;
-  }
+  } */
   
   //Putting values into Shuffleboard
   //Get encoder values from falcons (built in encoders) and other motors
