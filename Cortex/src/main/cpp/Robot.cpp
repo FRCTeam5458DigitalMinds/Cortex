@@ -889,7 +889,7 @@ void Robot::TeleopPeriodic() {
 
   //Code for shooting
   if (Xbox.GetRawButtonPressed(3)) {
-    Shooter(0.5); //if we increase shooter speed, remember to also increase speed average motor speed has to be greater than
+    //Shooter(0.5); //if we increase shooter speed, remember to also increase speed average motor speed has to be greater than
     ConveyorPiston.Set(!ConveyorPiston.Get());
     if ((fabs(LeftShooter.GetMotorOutputPercent()) + fabs(RightShooter.GetMotorOutputPercent()) / 2) > 0.45) {
       Conveyor(-0.2, -0.2);
