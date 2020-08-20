@@ -74,7 +74,7 @@ Y: 4
 frc::Joystick JoyAccel1{0}, Xbox{1}, RaceWheel{2};
 
 //Solenoids
-frc::Solenoid solenoid0{0}; 
+frc::Solenoid ClimbPistons{0}; 
 frc::Solenoid ConveyorPiston{1}; 
 frc::Solenoid BackIntakePiston{2}; 
 frc::Solenoid FrontIntakePiston{3}; 
@@ -297,6 +297,7 @@ void Robot::AutonomousInit() {
     FrontIntakePiston.Set(false);
     BackIntakePiston.Set(false);
     ConveyorPiston.Set(false);
+    ClimbPistons.Set(false);
   }
 }
 
@@ -903,12 +904,12 @@ void Robot::TeleopPeriodic() {
 
   //Code for intaking
   if (Xbox.GetRawButton(4)){
-    FrontIntake.Set(ControlMode::PercentOutput, 0.75);
+    FrontIntake.Set(ControlMode::PercentOutput, 0.1);
     BackIntake.Set(ControlMode::PercentOutput, 0);
     Conveyor(-0.2, -0.2);
   } else if (Xbox.GetRawButton(1)) {
     FrontIntake.Set(ControlMode::PercentOutput, 0);
-    BackIntake.Set(ControlMode::PercentOutput, 0.75);
+    BackIntake.Set(ControlMode::PercentOutput, 0.1);
     Conveyor(-0.2, -0.2);
   }
 
@@ -942,6 +943,14 @@ void Robot::TeleopPeriodic() {
     switchedIntakes = false;
   } */
   
+  //Code for Climb
+  if (Xbox.GetRawButtonPressed(2)) {
+    ClimbPistons.Set(!ClimbPistons.Get());
+  }
+  else {
+    ClimbPistons.Set(false);
+  }
+
   //Putting values into Shuffleboard
   //Get encoder values from falcons (built in encoders) and other motors
   frc::SmartDashboard::PutNumber("RightEncoderOne", RightMotorOne.GetSelectedSensorPosition());
