@@ -945,7 +945,7 @@ void Robot::TeleopPeriodic() {
   
   //Code for Climb
   if (Xbox.GetRawButtonPressed(2)) {
-    ClimbPistons.Set(!ClimbPistons.Get());
+    ClimbPistons.Set(true);
   }
   else {
     ClimbPistons.Set(false);
