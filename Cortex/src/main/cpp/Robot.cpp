@@ -54,8 +54,8 @@ TalonSRX LeftConveyor{102};
 TalonSRX RightConveyor{103};
 
 //Shooter
-TalonFX LeftShooter{104};
-TalonFX RightShooter{105};
+TalonFX LeftShooter{9};
+TalonFX RightShooter{6};
 
 /*
 Xbox Buttons:
@@ -152,8 +152,8 @@ void RightMotorsSpeed(double speed) {
   RightMotorThree.Set(ControlMode::PercentOutput, speed);
 }
 void Shooter(double speed){
-  LeftShooter.Set(ControlMode::PercentOutput, speed);
-  RightShooter.Set(ControlMode::PercentOutput, -speed);
+  LeftShooter.Set(ControlMode::PercentOutput, -(speed * speed));
+  RightShooter.Set(ControlMode::PercentOutput, (speed * speed));
 }
 void Conveyor(double leftSpeed, double rightSpeed){
   LeftConveyor.Set(ControlMode::PercentOutput, leftSpeed);
@@ -889,18 +889,18 @@ void Robot::TeleopPeriodic() {
   //lastSumAngle = sumAngle;
 
   //Code for shooting
-  if (Xbox.GetRawButtonPressed(3)) {
-    //Shooter(0.5); //if we increase shooter speed, remember to also increase speed average motor speed has to be greater than
-    ConveyorPiston.Set(!ConveyorPiston.Get());
-    if ((fabs(LeftShooter.GetMotorOutputPercent()) + fabs(RightShooter.GetMotorOutputPercent()) / 2) > 0.45) {
-      Conveyor(-0.2, -0.2);
-      ConveyorPiston.Set(true);
+  if (Xbox.GetRawButton(3)) {
+    Shooter(0.2); //if we increase shooter speed, remember to also increase speed average motor speed has to be greater than
+    //ConveyorPiston.Set(!ConveyorPiston.Get());
+    if ((fabs(LeftShooter.GetMotorOutputPercent()) + fabs(RightShooter.GetMotorOutputPercent()) / 2) > 0.5) {
+      Conveyor(-0.1, -0.1);
+      //ConveyorPiston.Set(true);
     }
   } else {
     Shooter(0);
     Conveyor(0, 0);
     ConveyorPiston.Set(false);
-  }
+  } 
 
   //Code for intaking
   if (Xbox.GetRawButton(4)){
@@ -935,6 +935,7 @@ void Robot::TeleopPeriodic() {
   if (Xbox.GetRawButtonPressed(6)){
     FrontIntakePiston.Set(!FrontIntakePiston.Get());
   }
+
   /*if (Xbox.GetRawAxis(2) > 0.05 && !switchedIntakes){
     FrontIntakePiston.Set(!FrontIntakePiston.Get());
     BackIntakePiston.Set(!FrontIntakePiston.Get());
@@ -944,12 +945,12 @@ void Robot::TeleopPeriodic() {
   } */
   
   //Code for Climb
-  if (Xbox.GetRawButtonPressed(2)) {
+  /*if (Xbox.GetRawButtonPressed(2)) {
     ClimbPistons.Set(true);
   }
   else {
     ClimbPistons.Set(false);
-  }
+  }*/
 
   //Putting values into Shuffleboard
   //Get encoder values from falcons (built in encoders) and other motors
