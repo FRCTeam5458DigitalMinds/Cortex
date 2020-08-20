@@ -74,11 +74,11 @@ Y: 4
 frc::Joystick JoyAccel1{0}, Xbox{1}, RaceWheel{2};
 
 //Solenoids
-frc::Solenoid ClimbPistons{0}; 
-frc::Solenoid ConveyorPiston{1}; 
+frc::Solenoid ClimbPistons{0};  
 frc::Solenoid BackIntakePiston{2}; 
 frc::Solenoid FrontIntakePiston{3}; 
 frc::Solenoid solenoid4{4}; 
+frc::Solenoid ConveyorPiston{5};
 
 //Teleop variables
 double JoyY;
@@ -152,6 +152,7 @@ void RightMotorsSpeed(double speed) {
   RightMotorThree.Set(ControlMode::PercentOutput, speed);
 }
 void Shooter(double speed){
+  //P=1/(currentspeed - target speed)^2
   LeftShooter.Set(ControlMode::PercentOutput, -(speed * speed));
   RightShooter.Set(ControlMode::PercentOutput, (speed * speed));
 }
