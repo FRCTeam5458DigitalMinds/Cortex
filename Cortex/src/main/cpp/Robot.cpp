@@ -115,6 +115,8 @@ double averageEncoderValue;
 double averageMotorSpeed;
 double motorAccelerationSpeed;
 double amountToAccelerate;
+double lastButton3;
+double lastButton2;
 
 //Acceleration Variables (Teleop)
 double accelerationSpeed;
@@ -890,19 +892,21 @@ void Robot::TeleopPeriodic() {
   //lastSumAngle = sumAngle;
 
   //Code for shooting
-  if (Xbox.GetRawButton(3)) {
-    Shooter(0.2); //if we increase shooter speed, remember to also increase speed average motor speed has to be greater than
-    //ConveyorPiston.Set(!ConveyorPiston.Get());
-    if ((fabs(LeftShooter.GetMotorOutputPercent()) + fabs(RightShooter.GetMotorOutputPercent()) / 2) > 0.5) {
+  if (Xbox.GetRawButtonPressed(3) > lastButton3) {
+    //Shooter(0.2); //if we increase shooter speed, remember to also increase speed average motor speed has to be greater than
+    ConveyorPiston.Set(!ConveyorPiston.Get());
+    /*if ((fabs(LeftShooter.GetMotorOutputPercent()) + fabs(RightShooter.GetMotorOutputPercent()) / 2) > 0.5) {
       Conveyor(-0.1, -0.1);
-      //ConveyorPiston.Set(true);
-    }
-  } else {
+      ConveyorPiston.Set(true);
+    }*/
+  } 
+  else {
     Shooter(0);
     Conveyor(0, 0);
     ConveyorPiston.Set(false);
   } 
-
+  lastButton3 = Xbox.GetRawButtonPressed(3);
+  
   //Code for intaking
   if (Xbox.GetRawButton(4)){
     FrontIntake.Set(ControlMode::PercentOutput, 0.1);
@@ -946,12 +950,13 @@ void Robot::TeleopPeriodic() {
   } */
   
   //Code for Climb
-  /*if (Xbox.GetRawButtonPressed(2)) {
-    ClimbPistons.Set(true);
+  if (Xbox.GetRawButtonPressed(2) > lastButton2) {
+    ClimbPistons.Set(!ClimbPistons.Get());
   }
   else {
     ClimbPistons.Set(false);
-  }*/
+  }
+  lastButton2 = Xbox.GetRawButtonPressed(2);
 
   //Putting values into Shuffleboard
   //Get encoder values from falcons (built in encoders) and other motors
