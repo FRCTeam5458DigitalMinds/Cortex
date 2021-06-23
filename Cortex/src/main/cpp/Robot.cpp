@@ -46,12 +46,12 @@ TalonSRX colorMotor{5};
 frc::ADXRS450_Gyro *gyro;
 
 //Intakes
-TalonSRX FrontIntake{100};
-TalonSRX BackIntake{101};
+TalonSRX FrontIntake{11};
+TalonSRX BackIntake{3};
 
 //Conveyor
-TalonSRX LeftConveyor{102};
-TalonSRX RightConveyor{103};
+TalonSRX LeftConveyor{5};
+TalonSRX RightConveyor{10};
 
 //Shooter
 TalonFX LeftShooter{9};
@@ -74,11 +74,11 @@ Y: 4
 frc::Joystick JoyAccel1{0}, Xbox{1}, RaceWheel{2};
 
 //Solenoids
-frc::Solenoid ClimbPistons{0};  
-frc::Solenoid BackIntakePiston{2}; 
-frc::Solenoid FrontIntakePiston{3}; 
+frc::Solenoid BackIntakePiston{0};  
+frc::Solenoid FrontIntakePiston{1};
+frc::Solenoid ClimbPistons{2}; 
+frc::Solenoid ConveyorPiston{3}; 
 frc::Solenoid solenoid4{4}; 
-frc::Solenoid ConveyorPiston{5};
 
 //Teleop variables
 double JoyY;
@@ -301,6 +301,7 @@ void Robot::AutonomousInit() {
     BackIntakePiston.Set(false);
     ConveyorPiston.Set(false);
     ClimbPistons.Set(false);
+    solenoid4.Set(false);
   }
 }
 
@@ -891,35 +892,35 @@ void Robot::TeleopPeriodic() {
 
   //lastSumAngle = sumAngle;
 
-  //Code for shooting
-  if (Xbox.GetRawButtonPressed(3) > lastButton3) {
+  //Code for shooting (button x - 3)
+  if (Xbox.GetRawButton(3)){
+    Shooter(0.7);
+  } 
+  if (Xbox.GetRawButtonPressed(8)) {
     //Shooter(0.2); //if we increase shooter speed, remember to also increase speed average motor speed has to be greater than
-    ConveyorPiston.Set(!ConveyorPiston.Get());
+    //Conveyor Piston - Button X
+    ConveyorPiston.Set(!ConveyorPiston.Get()); //Sets conveyor piston to opposite of previous value (if it was false, it is now true and vice versa)
     /*if ((fabs(LeftShooter.GetMotorOutputPercent()) + fabs(RightShooter.GetMotorOutputPercent()) / 2) > 0.5) {
       Conveyor(-0.1, -0.1);
       ConveyorPiston.Set(true);
     }*/
-  } 
+  }
   else {
     Shooter(0);
     Conveyor(0, 0);
     ConveyorPiston.Set(false);
   } 
-  lastButton3 = Xbox.GetRawButtonPressed(3);
-  
-  //Code for intaking
+
+  //Code for intaking & spitting
   if (Xbox.GetRawButton(4)){
-    FrontIntake.Set(ControlMode::PercentOutput, 0.1);
+    FrontIntake.Set(ControlMode::PercentOutput, 0.6);
     BackIntake.Set(ControlMode::PercentOutput, 0);
-    Conveyor(-0.2, -0.2);
+    Conveyor(-0.6, 0.6);
   } else if (Xbox.GetRawButton(1)) {
     FrontIntake.Set(ControlMode::PercentOutput, 0);
-    BackIntake.Set(ControlMode::PercentOutput, 0.1);
-    Conveyor(-0.2, -0.2);
-  }
-
-  //Code for spitting
-  if (Xbox.GetPOV() == 0){
+    BackIntake.Set(ControlMode::PercentOutput, 0.6);
+    Conveyor(-0.6, 0.6);
+  } else if (Xbox.GetPOV() == 0){
     FrontIntake.Set(ControlMode::PercentOutput, -0.75);
     BackIntake.Set(ControlMode::PercentOutput, 0);
     Conveyor(-0.2, 0.2);
@@ -932,8 +933,9 @@ void Robot::TeleopPeriodic() {
     BackIntake.Set(ControlMode::PercentOutput, 0);
     Conveyor(0, 0);
   }
+  
 
-  //Code for intake pistons
+  //Code for intake pistons (left button-5 right button-6)
   if (Xbox.GetRawButtonPressed(5)) {
     BackIntakePiston.Set(!BackIntakePiston.Get());
   } 
@@ -949,14 +951,13 @@ void Robot::TeleopPeriodic() {
     switchedIntakes = false;
   } */
   
-  //Code for Climb
-  if (Xbox.GetRawButtonPressed(2) > lastButton2) {
+  //Code for Climb (Button B)
+  if (Xbox.GetRawButtonPressed(2)) {
     ClimbPistons.Set(!ClimbPistons.Get());
   }
   else {
     ClimbPistons.Set(false);
   }
-  lastButton2 = Xbox.GetRawButtonPressed(2);
 
   //Putting values into Shuffleboard
   //Get encoder values from falcons (built in encoders) and other motors
