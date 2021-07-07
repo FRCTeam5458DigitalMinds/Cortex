@@ -46,16 +46,16 @@ TalonSRX colorMotor{5};
 frc::ADXRS450_Gyro *gyro;
 
 //Intakes
-TalonSRX FrontIntake{100};
-TalonSRX BackIntake{101};
+TalonSRX FrontIntake{11};
+TalonSRX BackIntake{4};
 
 //Conveyor
-TalonSRX LeftConveyor{102};
-TalonSRX RightConveyor{103};
+TalonSRX LeftConveyor{10};
+TalonSRX RightConveyor{5};
 
 //Shooter
-TalonFX LeftShooter{104};
-TalonFX RightShooter{105};
+TalonFX LeftShooter{9};
+TalonFX RightShooter{6};
 
 /*
 Xbox Buttons:
@@ -889,12 +889,12 @@ void Robot::TeleopPeriodic() {
 
   //Code for shooting
   if (Xbox.GetRawButton(3)) {
-    Shooter(0.5); //if we increase shooter speed, remember to also increase speed average motor speed has to be greater than
-    ConveyorPiston.Set(!ConveyorPiston.Get());
+    Shooter(-0.3); //if we increase shooter speed, remember to also increase speed average motor speed has to be greater than
+    /*ConveyorPiston.Set(!ConveyorPiston.Get());
     if ((fabs(LeftShooter.GetMotorOutputPercent()) + fabs(RightShooter.GetMotorOutputPercent()) / 2) > 0.45) {
       Conveyor(-0.2, -0.2);
       ConveyorPiston.Set(true);
-    }
+    }*/
   } else {
     Shooter(0);
     Conveyor(0, 0);
@@ -905,22 +905,22 @@ void Robot::TeleopPeriodic() {
   if (Xbox.GetRawButton(4)){
     FrontIntake.Set(ControlMode::PercentOutput, 0.75);
     BackIntake.Set(ControlMode::PercentOutput, 0);
-    Conveyor(-0.2, -0.2);
+    //Conveyor(-0.2, -0.2);
   } else if (Xbox.GetRawButton(1)) {
     FrontIntake.Set(ControlMode::PercentOutput, 0);
     BackIntake.Set(ControlMode::PercentOutput, 0.75);
-    Conveyor(-0.2, -0.2);
+    //Conveyor(-0.2, -0.2);
   }
 
   //Code for spitting
   if (Xbox.GetPOV() == 0){
     FrontIntake.Set(ControlMode::PercentOutput, -0.75);
     BackIntake.Set(ControlMode::PercentOutput, 0);
-    Conveyor(-0.2, 0.2);
+    //Conveyor(-0.2, 0.2);
   } else if (Xbox.GetPOV() == 180){
     FrontIntake.Set(ControlMode::PercentOutput, 0);
     BackIntake.Set(ControlMode::PercentOutput, -0.75);
-    Conveyor(0.2, -0.2);
+    //Conveyor(0.2, -0.2);
   } else {
     FrontIntake.Set(ControlMode::PercentOutput, 0);
     BackIntake.Set(ControlMode::PercentOutput, 0);
