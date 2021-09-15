@@ -892,20 +892,15 @@ void Robot::TeleopPeriodic() {
 
   //lastSumAngle = sumAngle;
 
-  //Code for shooting (button x - 3)
-  if (Xbox.GetRawButton(3)){
-    Shooter(0.7);
-  } 
-  if (Xbox.GetRawButtonPressed(8)) {
-    //Shooter(0.2); //if we increase shooter speed, remember to also increase speed average motor speed has to be greater than
-    //Conveyor Piston - Button X
-    ConveyorPiston.Set(!ConveyorPiston.Get()); //Sets conveyor piston to opposite of previous value (if it was false, it is now true and vice versa)
-    /*if ((fabs(LeftShooter.GetMotorOutputPercent()) + fabs(RightShooter.GetMotorOutputPercent()) / 2) > 0.5) {
-      Conveyor(-0.1, -0.1);
+  //Code for shooting
+  if (Xbox.GetRawButton(3)) {
+    Shooter(-0.3); //if we increase shooter speed, remember to also increase speed average motor speed has to be greater than
+    /*ConveyorPiston.Set(!ConveyorPiston.Get());
+    if ((fabs(LeftShooter.GetMotorOutputPercent()) + fabs(RightShooter.GetMotorOutputPercent()) / 2) > 0.45) {
+      Conveyor(-0.2, -0.2);
       ConveyorPiston.Set(true);
     }*/
-  }
-  else {
+  } else {
     Shooter(0);
     Conveyor(0, 0);
     ConveyorPiston.Set(false);
@@ -915,19 +910,22 @@ void Robot::TeleopPeriodic() {
   if (Xbox.GetRawButton(4)){
     FrontIntake.Set(ControlMode::PercentOutput, 0.6);
     BackIntake.Set(ControlMode::PercentOutput, 0);
-    Conveyor(-0.6, 0.6);
+    //Conveyor(-0.2, -0.2);
   } else if (Xbox.GetRawButton(1)) {
     FrontIntake.Set(ControlMode::PercentOutput, 0);
-    BackIntake.Set(ControlMode::PercentOutput, 0.6);
-    Conveyor(-0.6, 0.6);
-  } else if (Xbox.GetPOV() == 0){
+    BackIntake.Set(ControlMode::PercentOutput, 0.75);
+    //Conveyor(-0.2, -0.2);
+  }
+
+  //Code for spitting
+  if (Xbox.GetPOV() == 0){
     FrontIntake.Set(ControlMode::PercentOutput, -0.75);
     BackIntake.Set(ControlMode::PercentOutput, 0);
-    Conveyor(-0.2, 0.2);
+    //Conveyor(-0.2, 0.2);
   } else if (Xbox.GetPOV() == 180){
     FrontIntake.Set(ControlMode::PercentOutput, 0);
     BackIntake.Set(ControlMode::PercentOutput, -0.75);
-    Conveyor(0.2, -0.2);
+    //Conveyor(0.2, -0.2);
   } else {
     FrontIntake.Set(ControlMode::PercentOutput, 0);
     BackIntake.Set(ControlMode::PercentOutput, 0);
