@@ -19,8 +19,8 @@
 #include <frc/Solenoid.h>
 //Color Sensor
 #include <frc/util/color.h>
-#include <rev/ColorSensorV3.h>
-#include <rev/ColorMatch.h>
+//#include <rev/ColorSensorV3.h>
+//#include <rev/ColorMatch.h>
 using namespace std; 
 
 //Declarations
@@ -172,9 +172,9 @@ void music() {
 }
 
 //Color Sensor
-static constexpr auto i2cPort = frc::I2C::Port::kOnboard;
-rev::ColorSensorV3 m_colorSensor{i2cPort};
-rev::ColorMatch m_colorMatcher;
+//static constexpr auto i2cPort = frc::I2C::Port::kOnboard;
+//rev::ColorSensorV3 m_colorSensor{i2cPort};
+//rev::ColorMatch m_colorMatcher;
 //Colors (RGB values [0-1])
 static constexpr frc::Color kBlueTarget = frc::Color(0.143, 0.427, 0.429);
 static constexpr frc::Color kGreenTarget = frc::Color(0.197, 0.561, 0.240);
@@ -193,10 +193,10 @@ void Robot::RobotInit() {
   startingAngle = 0;
   
   //Color Sensor
-  m_colorMatcher.AddColorMatch(kBlueTarget);
+  /*m_colorMatcher.AddColorMatch(kBlueTarget);
   m_colorMatcher.AddColorMatch(kGreenTarget);
   m_colorMatcher.AddColorMatch(kRedTarget);
-  m_colorMatcher.AddColorMatch(kYellowTarget);
+  m_colorMatcher.AddColorMatch(kYellowTarget);*/
 }
 
 /**
@@ -433,8 +433,6 @@ void turn(double degrees, double percentPerSecond, double maxSpeed) {
   Accelerate in degrees per second rather than percent per second.
   Use gyro->GetRate() to know if we have reached the maximum speed we want to go
   Increase rate until gyro->GetRate() equals a certain value
-  
-  
   
   double encoderUnits = (degrees * 26000)/360;
   double averageEncoderValue = (LeftMotorOne.GetSelectedSensorPosition() + RightMotorOne.GetSelectedSensorPosition())/2;
@@ -807,7 +805,7 @@ void Robot::TeleopPeriodic() {
 	float derivAngle = sumAngle - lastSumAngle;
 
   //Color Sensor Code
-  frc::Color detectedColor = m_colorSensor.GetColor();
+  /*frc::Color detectedColor = m_colorSensor.GetColor();
   std::string colorString;
   double confidence = 0.0;
   frc::Color matchedColor = m_colorMatcher.MatchClosestColor(detectedColor, confidence);
@@ -832,7 +830,7 @@ void Robot::TeleopPeriodic() {
   frc::SmartDashboard::PutNumber("Green", detectedColor.green);
   frc::SmartDashboard::PutNumber("Blue", detectedColor.blue);
   frc::SmartDashboard::PutNumber("Confidence", confidence);
-  frc::SmartDashboard::PutString("Detected Color", colorString);
+  frc::SmartDashboard::PutString("Detected Color", colorString); */
   
   //Joysticks
   if (inverted){
@@ -867,6 +865,7 @@ void Robot::TeleopPeriodic() {
       RightMotorsSpeed(WheelX * WheelX);
     }
   } 
+
   //Regular Turning
   else if((WheelX < -0.05 || WheelX > 0.05) && (JoyY > 0.05 || JoyY < -0.05)){
     LeftMotorsSpeed(accelerationSpeed + (fabs(accelerationSpeed) * WheelX));
@@ -880,6 +879,7 @@ void Robot::TeleopPeriodic() {
     LeftMotorsSpeed(accelerationSpeed - (fabs(accelerationSpeed)* correctionAngle));                 
     RightMotorsSpeed(accelerationSpeed + (fabs(accelerationSpeed) * correctionAngle));
   } 
+  
   //Code for if nothing is pressed
   else {
     LeftMotorsSpeed(0);
